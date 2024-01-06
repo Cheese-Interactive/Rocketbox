@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour {
@@ -43,6 +44,12 @@ public class PlayerCamera : MonoBehaviour {
 
         SceneView();
         UpdateCamPos();
+        if (inHorizontalBounds() && inVerticalBounds())
+            lerpToTarget(targetPos, travelTime);
+        else if (inHorizontalBounds())
+            lerpToTarget(new Vector3(targetPos.x, currentPos.y, layer), travelTime);
+        else if (inVerticalBounds())
+            lerpToTarget(new Vector3(currentPos.x, targetPos.x, layer), travelTime);
 
         //print(transform.position);
     }
@@ -54,21 +61,16 @@ public class PlayerCamera : MonoBehaviour {
         //
         //this first if statement (plus the else on the other 2) solves an issue
         //without it, the camera only moved horizontally when you were inside the area where the cam couldnt move veritcally (smth like that)
-        if (inHorizontalBounds() && inVerticalBounds() && !camFrozen)
-            transform.position = targetPos;
-        else if (inHorizontalBounds() && !camFrozen)
-            transform.position = new Vector3(targetPos.x, currentPos.y, layer);
-        else if (inVerticalBounds() && !camFrozen)
-            transform.position = new Vector3(currentPos.x, targetPos.y, layer);
+        /*  if (inHorizontalBounds() && inVerticalBounds() && !camFrozen)
+              transform.position = targetPos;
+          else if (inHorizontalBounds() && !camFrozen)
+              transform.position = new Vector3(targetPos.x, currentPos.y, layer);
+          else if (inVerticalBounds() && !camFrozen)
+              transform.position = new Vector3(currentPos.x, targetPos.y, layer); */
         //TODO: make it lerp
         //wip code:
-        /*
-        if (inHorizontalBounds() && inVerticalBounds())
-            transform.position = Vector3.Lerp(currentPos, targetPos, travelTime);
-        else if (inHorizontalBounds())
-            transform.position = Vector3.Lerp(currentPos, new Vector3(targetPos.x, currentPos.y, layer), travelTime);
-        else if (inVerticalBounds())
-            transform.position = Vector3.Lerp(currentPos, new Vector3(currentPos.x, targetPos.x, layer), travelTime);*/
+
+
     }
 
     private bool inHorizontalBounds() {
@@ -94,5 +96,17 @@ public class PlayerCamera : MonoBehaviour {
             cam.orthographicSize = defaultCamSize;
             transform.position = currentPos;
         }
+    }
+
+    private IEnumerator lerpToTarget(Vector3 target, float duration) {
+        float t = 0;
+        while (t < duration) {
+            transform.position = Vector3.Lerp(currentPos, target, t / duration);
+            t += Time.deltaTime;
+            print("Lerping...");
+            yield return null;
+        }
+        //transform.position = targetPos;
+        print("Lerp Complete");
     }
 }
