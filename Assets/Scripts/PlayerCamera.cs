@@ -20,6 +20,13 @@ public class PlayerCamera : MonoBehaviour {
     [SerializeField] private GameObject leftBound;
     [SerializeField] private GameObject rightBound;
 
+    [Header("Full Scene View")]
+    //when changing sizes, remember to adjust cam bounds
+    [SerializeField] private float defaultCamSize = 5f;
+    [SerializeField] private float sceneCamSize = 11.47f;
+    [SerializeField] private Vector3 sceneCamPos;
+    private bool camFrozen = false;
+
 
 
     // Start is called before the first frame update
@@ -27,24 +34,32 @@ public class PlayerCamera : MonoBehaviour {
 
     private void Awake() {
         cam = GetComponent<Camera>();
+        camFrozen = false;
+        cam.orthographicSize = defaultCamSize;
     }
     void Update() {
         currentPos = new Vector3(transform.position.x, transform.position.y, layer);
         targetPos = new Vector3(target.transform.position.x, target.transform.position.y + verticalOffset, layer);
+
+        SceneView();
+        UpdateCamPos();
+
+        //print(transform.position);
+    }
+
+    private void UpdateCamPos() {
         //PURPOSE: cam follows player
         //cam has regions (defined by "bound" GameObjects) in which it does not move, two per axis
         //i found out later there is a way to do this with math but for now this works so ill keep it
         //
         //this first if statement (plus the else on the other 2) solves an issue
         //without it, the camera only moved horizontally when you were inside the area where the cam couldnt move veritcally (smth like that)
-
-        if (inHorizontalBounds() && inVerticalBounds())
+        if (inHorizontalBounds() && inVerticalBounds() && !camFrozen)
             transform.position = targetPos;
-        else if (inHorizontalBounds())
+        else if (inHorizontalBounds() && !camFrozen)
             transform.position = new Vector3(targetPos.x, currentPos.y, layer);
-        else if (inVerticalBounds())
+        else if (inVerticalBounds() && !camFrozen)
             transform.position = new Vector3(currentPos.x, targetPos.y, layer);
-
         //TODO: make it lerp
         //wip code:
         /*
@@ -54,13 +69,6 @@ public class PlayerCamera : MonoBehaviour {
             transform.position = Vector3.Lerp(currentPos, new Vector3(targetPos.x, currentPos.y, layer), travelTime);
         else if (inVerticalBounds())
             transform.position = Vector3.Lerp(currentPos, new Vector3(currentPos.x, targetPos.x, layer), travelTime);*/
-
-
-
-
-
-
-        //print(transform.position);
     }
 
     private bool inHorizontalBounds() {
@@ -70,5 +78,21 @@ public class PlayerCamera : MonoBehaviour {
     private bool inVerticalBounds() {
         return targetPos.y >= lowerBound.transform.position.y
                && targetPos.y <= upperBound.transform.position.y;
+    }
+
+    private void SceneView() {
+        //see the whole scene
+        //BUG: when exiting full scene view while player is out of camera bounds, it takes a second for the camera to sync back up
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            camFrozen = true;
+            cam.orthographicSize = sceneCamSize;
+            transform.position = sceneCamPos;
+        }
+        if (Input.GetKeyUp(KeyCode.Space)) {
+            //reset
+            camFrozen = false;
+            cam.orthographicSize = defaultCamSize;
+            transform.position = currentPos;
+        }
     }
 }

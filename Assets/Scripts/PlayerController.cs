@@ -3,7 +3,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     [Header("Speed and multipliers")]
-    [SerializeField] private float thrust;
+    [SerializeField] private float forceApp;
+    [SerializeField] private float maxForce;
     [Header("")]
     [SerializeField] private float upMultiplier = 1;
     [SerializeField] private float downMultiplier = 1;
@@ -35,8 +36,17 @@ public class PlayerController : MonoBehaviour {
         if (hMultiplier == -1)
             hMultiplier *= leftMultiplier;
 
-        rb.AddForce(transform.up * thrust * vMultiplier);
-        rb.AddForce(transform.right * thrust * hMultiplier);
+        rb.AddForce(transform.up * forceApp * vMultiplier + transform.right * forceApp * hMultiplier);
+
+        //print(System.Math.Abs(rb.totalForce.x) + " " + System.Math.Abs(rb.totalForce.y));
+        //janky way of adding a max force. it doesnt work super cleanly but it works
+        if (System.Math.Abs(rb.totalForce.x) > maxForce) {
+            rb.AddForce(-transform.right * forceApp * hMultiplier);
+        }
+        if (System.Math.Abs(rb.totalForce.y) > maxForce) {
+            rb.AddForce(-transform.up * forceApp * vMultiplier);
+        }
+
     }
 
 }
