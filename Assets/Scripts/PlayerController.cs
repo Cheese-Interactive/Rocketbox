@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -10,17 +12,24 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private float maxForce;
     //[SerializeField] private float hoverLaunchForce;
     //[SerializeField] private float hoverGravityCounterAcceleration;
-    [Header("")]
     [SerializeField] private float upMultiplier = 1;
     [SerializeField] private float downMultiplier = 1;
     [SerializeField] private float leftMultiplier = 1;
     [SerializeField] private float rightMultiplier = 1;
 
+    [Header("Projectiles")]
+    [SerializeField] private GameObject[] projectiles;
+    private int currentProjectile = 0;
+
     private Rigidbody2D rb;
     //i know [vvvvvv] is a weird implementation but idc
     private float hMultiplier;
     private float vMultiplier;
+
     private bool canAct = true;
+    private bool canShoot = true;
+
+    [SerializeField] private GameObject simpleText;
 
     // Start is called before the first frame update
     void Start() {
@@ -43,9 +52,11 @@ public class PlayerController : MonoBehaviour {
                 hMultiplier *= rightMultiplier;
             if (hMultiplier == -1)
                 hMultiplier *= leftMultiplier;
+            shoot();
         }
+        switchWeapon();
 
-        rb.AddForce(transform.up * forceApp * vMultiplier + transform.right * forceApp * hMultiplier);
+        rb.AddForce(transform.up.normalized * forceApp * vMultiplier + transform.right.normalized * forceApp * hMultiplier);
 
         //print(System.Math.Abs(rb.totalForce.x) + " " + System.Math.Abs(rb.totalForce.y));
         //janky way of adding a max force. it doesnt work super cleanly but it works
@@ -60,5 +71,44 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    private void shoot() {
+        //idk how to condense this
+        Vector3 loc = new Vector3(transform.position.x, transform.position.y, 0);
+        Quaternion rot = Quaternion.identity;
+        GameObject current = projectiles[currentProjectile];
+        if (canShoot) {
+            if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(180)));
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow)) {
+                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(0)));
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(90)));
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow)) {
+                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(270)));
+            }
+        }
 
+    }
+
+    private void switchWeapon() {
+        if (Input.GetKeyDown(KeyCode.R)) {
+            if (currentProjectile == projectiles.Length - 1) {
+                currentProjectile = 0;
+            }
+            else
+                currentProjectile++;
+            //exploit with this switch weapons to skip cooldowns
+            canShoot = true;
+        }
+        simpleText.GetComponent<TextMeshProUGUI>().text = "Using: " + projectiles[currentProjectile] + " (" + currentProjectile + ")";
+    }
+
+    private IEnumerator shootCooldown(float time) {
+        canShoot = false;
+        yield return new WaitForSeconds(time);
+        canShoot = true;
+    }
 }

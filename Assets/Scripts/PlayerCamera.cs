@@ -8,12 +8,14 @@ public class PlayerCamera : MonoBehaviour {
     private int layer = -50;
     //[^^^^^] is a result of me figuring out how to "layer" gameobjects in unity2d
     private Camera cam;
+    private bool playerInFrame;
     Vector3 targetPos = new Vector3(0, 0, 0);
     Vector3 currentPos = new Vector3(0, 0, 0);
 
     [SerializeField] private GameObject target;
     [SerializeField] private float verticalOffset;
     [SerializeField] private float travelTime;
+    [SerializeField] private float zoomedTravelTimeModifier;
 
     [Header("Bounds")]
     [SerializeField] private GameObject upperBound;
@@ -26,7 +28,6 @@ public class PlayerCamera : MonoBehaviour {
     [SerializeField] private float defaultCamSize;
     [SerializeField] private float zoomCamSize;
     [SerializeField] private float zoomTime;
-    [SerializeField] private Vector3 zoomCamPos; //not sure if this is needed anymore, was at one point
     private bool isPosLerping = false;
     private bool isFovLerping = false;
     private bool isZoomedOut = false;
@@ -36,7 +37,7 @@ public class PlayerCamera : MonoBehaviour {
     // Start is called before the first frame update
     // Update is called once per frame
 
-    private void Awake() {
+    private void Start() {
         cam = GetComponent<Camera>();
         cam.orthographicSize = defaultCamSize;
     }
@@ -44,7 +45,11 @@ public class PlayerCamera : MonoBehaviour {
         currentPos = new Vector3(transform.position.x, transform.position.y, layer);
         targetPos = new Vector3(target.transform.position.x, target.transform.position.y + verticalOffset, layer);
 
-        ZoomOut();
+        updatePos();
+        zoomOut();
+    }
+
+    private void updatePos() {
         //cam follows player
         //cam has regions (defined by "bound" GameObjects) in which it does not move, two per axis
         //i found out later there is a way to do this with math but for now this works so ill keep it
@@ -59,21 +64,32 @@ public class PlayerCamera : MonoBehaviour {
               transform.position = new Vector3(targetPos.x, currentPos.y, layer);
           else if (inVerticalBounds() && !camFrozen)
               transform.position = new Vector3(currentPos.x, targetPos.y, layer); */
-
-        if (inHorizontalBounds() && inVerticalBounds() && !isPosLerping)
+        if (inHorizontalBounds() && inVerticalBounds() && !isPosLerping || isZoomedOut)
             StartCoroutine(lerpToTarget(targetPos, travelTime));
         else if (inHorizontalBounds() && !isPosLerping)
             StartCoroutine(lerpToTarget(new Vector3(targetPos.x, currentPos.y, layer), travelTime));
         else if (inVerticalBounds() && !isPosLerping)
             StartCoroutine(lerpToTarget(new Vector3(currentPos.x, targetPos.y, layer), travelTime));
-
-
+        //checkForPlayer();
     }
 
-    private void UpdateCamPos() {
-
-
+    private void zoomOut() {
+        //BUG: when exiting full scene view while player is out of camera bounds, it takes a second for the camera to sync back up
+        if (Input.GetKeyDown(KeyCode.Space) && !isFovLerping && !isZoomedOut) {
+            StartCoroutine(lerpCamSize(zoomCamSize, zoomTime));
+            transform.position = currentPos;
+            travelTime /= zoomedTravelTimeModifier;
+            isZoomedOut = true;
+        }
+        if (!Input.GetKey(KeyCode.Space) && isZoomedOut && !isFovLerping) {
+            //reset
+            StartCoroutine(lerpCamSize(defaultCamSize, zoomTime));
+            travelTime *= zoomedTravelTimeModifier;
+            forceCamOnPlayer(zoomTime);
+            isZoomedOut = false;
+        }
     }
+
 
     private bool inHorizontalBounds() {
         return targetPos.x >= leftBound.transform.position.x
@@ -83,20 +99,23 @@ public class PlayerCamera : MonoBehaviour {
         return targetPos.y >= lowerBound.transform.position.y
                && targetPos.y <= upperBound.transform.position.y;
     }
+    /* todo: when player goes out of frame, force frame onto player 
+     * or, find fix for player going too fast and then sitting out of view when leaving follow bounds
+     * private void onTriggerExit(Collision collision) {
+         if (collision.gameObject.layer != LayerMask.NameToLayer("Player"))
+             print("in frame");
+     }
+     private void onTriggerEnter(Collision collision) {
+         if (collision.gameObject.layer != LayerMask.NameToLayer("Player"))
+             print("not in frame");
+     }
+     private void checkForPlayer() {
+         if (!playerInFrame)
+             forceCamOnPlayer(travelTime);
+     }*/
 
-    private void ZoomOut() {
-        //BUG: when exiting full scene view while player is out of camera bounds, it takes a second for the camera to sync back up
-        if (Input.GetKeyDown(KeyCode.Space) && !isFovLerping && !isZoomedOut) {
-            StartCoroutine(lerpCamSize(zoomCamSize, zoomTime));
-            transform.position = zoomCamPos;
-            isZoomedOut = true;
-        }
-        if (!Input.GetKey(KeyCode.Space) && isZoomedOut && !isFovLerping) {
-            //reset
-            StartCoroutine(lerpCamSize(defaultCamSize, zoomTime));
-            transform.position = currentPos;
-            isZoomedOut = false;
-        }
+    private void forceCamOnPlayer(float time) {
+        StartCoroutine(lerpToTarget(targetPos, time));
     }
 
     //various lerping formulas and their curves
@@ -120,14 +139,12 @@ public class PlayerCamera : MonoBehaviour {
         float t = 0;
         float tEase = t / duration;
         while (t < duration) {
-            tEase = t * t * t * (t * (6f * t - 15f) + 10f);
+            tEase = (float)System.Math.Pow(t, 3) * (t * (6f * t - 15f) + 10f);
             cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, target, tEase);
             t += Time.deltaTime;
             yield return null;
         }
-        yield return new WaitForSeconds(duration / 10);
         isFovLerping = false;
-        print("Ready");
     }
 
 }
