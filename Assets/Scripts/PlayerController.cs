@@ -6,6 +6,9 @@ public class PlayerController : MonoBehaviour {
 
     [Header("Health: Hits to die")]
     [SerializeField] private int health;
+    [SerializeField] private float onHitImmunityTime;
+    private bool isImmune = false;
+    private int maxHealth;
 
     [Header("Speed and multipliers")]
     [SerializeField] private float forceApp;
@@ -19,6 +22,7 @@ public class PlayerController : MonoBehaviour {
 
     [Header("Projectiles")]
     [SerializeField] private GameObject[] projectiles;
+    [SerializeField] private GameObject enemyToSpawn;
     private int currentProjectile = 0;
 
     private Rigidbody2D rb;
@@ -34,6 +38,7 @@ public class PlayerController : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
+        maxHealth = health;
     }
 
     // Update is called once per frame
@@ -104,11 +109,59 @@ public class PlayerController : MonoBehaviour {
             canShoot = true;
         }
         simpleText.GetComponent<TextMeshProUGUI>().text = "Using: " + projectiles[currentProjectile] + " (" + currentProjectile + ")";
+
+        //leaving this here for now
+        if (Input.GetKeyDown(KeyCode.J)) {
+            Instantiate(enemyToSpawn, new Vector3(0, 0, 0), Quaternion.identity);
+        }
     }
 
     private IEnumerator shootCooldown(float time) {
         canShoot = false;
         yield return new WaitForSeconds(time);
         canShoot = true;
+    }
+
+    private IEnumerator playerImmuneFor(float time, bool disableActions) {
+        canAct = !disableActions;
+        isImmune = true;
+        yield return new WaitForSeconds(time);
+        isImmune = false;
+        if (canAct == false)
+            canAct = true;
+    }
+
+    public void setPlayerHealth(int health) {
+        health = this.health;
+    }
+
+    public void hitPlayer() {
+        if (!isImmune) {
+            rb.totalForce = new Vector2(-rb.totalForce.x, -rb.totalForce.y);
+            rb.velocity = new Vector2(0, 0);
+            StartCoroutine(playerImmuneFor(onHitImmunityTime, true));
+            rb.AddForce(transform.up * forceApp * 2f, ForceMode2D.Impulse);
+            health--;
+            checkHealth();
+        }
+        else
+            print("Player is immune!");
+
+    }
+
+    public void healPlayer(int heal) {
+        health += heal;
+        if (health >= maxHealth)
+            health = maxHealth;
+
+    }
+
+    public int getPlayerHealth() {
+        return health;
+    }
+
+    private void checkHealth() {
+        //to be implemented
+        print(health);
     }
 }

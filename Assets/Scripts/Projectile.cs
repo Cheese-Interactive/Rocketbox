@@ -5,7 +5,7 @@ public class Projectile : MonoBehaviour {
 
     [Header("Stats")]
     [SerializeField] private float speed;
-    [SerializeField] private float damage;
+    [SerializeField] private int damage;
     [SerializeField] private float cooldown; //time between shots
     private bool hasHitObject = false;
     private Rigidbody2D rb;
@@ -17,15 +17,17 @@ public class Projectile : MonoBehaviour {
         return cooldown;
     }
 
-    void OnCollisionEnter2D(Collision2D collision) {
+    protected void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.layer != LayerMask.NameToLayer("Player") &&
-        collision.gameObject.layer != LayerMask.NameToLayer("Projectile"))
+        collision.gameObject.layer != LayerMask.NameToLayer("Projectile")) {
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+                collision.otherCollider.GetComponentInParent<Enemy>(true).enemyHit(damage); //not working, enemy does not take damage
             hasHitObject = true;
-
+        }
     }
 
 
-    private IEnumerator travel(float direction) {
+    protected IEnumerator travel(float direction) {
         transform.forward = new Vector3(0, 0, direction);
         rb.SetRotation(direction);
         if (direction == 0) //right
