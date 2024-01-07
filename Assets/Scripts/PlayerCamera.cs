@@ -13,7 +13,7 @@ public class PlayerCamera : MonoBehaviour {
 
     [SerializeField] private GameObject target;
     [SerializeField] private float verticalOffset;
-    [SerializeField] private float travelTime = 0.2f;
+    [SerializeField] private float travelTime;
 
     [Header("Bounds")]
     [SerializeField] private GameObject upperBound;
@@ -23,10 +23,13 @@ public class PlayerCamera : MonoBehaviour {
 
     [Header("Full Scene View")]
     //when changing sizes, remember to adjust cam bounds
-    [SerializeField] private float defaultCamSize = 5f;
-    [SerializeField] private float sceneCamSize = 11.47f;
-    [SerializeField] private Vector3 sceneCamPos;
-    private bool camFrozen = false;
+    [SerializeField] private float defaultCamSize;
+    [SerializeField] private float zoomCamSize;
+    [SerializeField] private float zoomTime;
+    [SerializeField] private Vector3 zoomCamPos; //not sure if this is needed anymore, was at one point
+    private bool isPosLerping = false;
+    private bool isFovLerping = false;
+    private bool isZoomedOut = false;
 
 
 
@@ -35,40 +38,39 @@ public class PlayerCamera : MonoBehaviour {
 
     private void Awake() {
         cam = GetComponent<Camera>();
-        camFrozen = false;
         cam.orthographicSize = defaultCamSize;
     }
     void Update() {
         currentPos = new Vector3(transform.position.x, transform.position.y, layer);
         targetPos = new Vector3(target.transform.position.x, target.transform.position.y + verticalOffset, layer);
 
-        SceneView();
-        UpdateCamPos();
-        if (inHorizontalBounds() && inVerticalBounds())
-            lerpToTarget(targetPos, travelTime);
-        else if (inHorizontalBounds())
-            lerpToTarget(new Vector3(targetPos.x, currentPos.y, layer), travelTime);
-        else if (inVerticalBounds())
-            lerpToTarget(new Vector3(currentPos.x, targetPos.x, layer), travelTime);
-
-        //print(transform.position);
-    }
-
-    private void UpdateCamPos() {
-        //PURPOSE: cam follows player
+        ZoomOut();
+        //cam follows player
         //cam has regions (defined by "bound" GameObjects) in which it does not move, two per axis
         //i found out later there is a way to do this with math but for now this works so ill keep it
         //
         //this first if statement (plus the else on the other 2) solves an issue
         //without it, the camera only moved horizontally when you were inside the area where the cam couldnt move veritcally (smth like that)
-        /*  if (inHorizontalBounds() && inVerticalBounds() && !camFrozen)
+
+        /*  old code: no lerping
+         *  if (inHorizontalBounds() && inVerticalBounds() && !camFrozen)
               transform.position = targetPos;
           else if (inHorizontalBounds() && !camFrozen)
               transform.position = new Vector3(targetPos.x, currentPos.y, layer);
           else if (inVerticalBounds() && !camFrozen)
               transform.position = new Vector3(currentPos.x, targetPos.y, layer); */
-        //TODO: make it lerp
-        //wip code:
+
+        if (inHorizontalBounds() && inVerticalBounds() && !isPosLerping)
+            StartCoroutine(lerpToTarget(targetPos, travelTime));
+        else if (inHorizontalBounds() && !isPosLerping)
+            StartCoroutine(lerpToTarget(new Vector3(targetPos.x, currentPos.y, layer), travelTime));
+        else if (inVerticalBounds() && !isPosLerping)
+            StartCoroutine(lerpToTarget(new Vector3(currentPos.x, targetPos.y, layer), travelTime));
+
+
+    }
+
+    private void UpdateCamPos() {
 
 
     }
@@ -82,31 +84,50 @@ public class PlayerCamera : MonoBehaviour {
                && targetPos.y <= upperBound.transform.position.y;
     }
 
-    private void SceneView() {
-        //see the whole scene
+    private void ZoomOut() {
         //BUG: when exiting full scene view while player is out of camera bounds, it takes a second for the camera to sync back up
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            camFrozen = true;
-            cam.orthographicSize = sceneCamSize;
-            transform.position = sceneCamPos;
+        if (Input.GetKeyDown(KeyCode.Space) && !isFovLerping && !isZoomedOut) {
+            StartCoroutine(lerpCamSize(zoomCamSize, zoomTime));
+            transform.position = zoomCamPos;
+            isZoomedOut = true;
         }
-        if (Input.GetKeyUp(KeyCode.Space)) {
+        if (!Input.GetKey(KeyCode.Space) && isZoomedOut && !isFovLerping) {
             //reset
-            camFrozen = false;
-            cam.orthographicSize = defaultCamSize;
+            StartCoroutine(lerpCamSize(defaultCamSize, zoomTime));
             transform.position = currentPos;
+            isZoomedOut = false;
         }
     }
 
+    //various lerping formulas and their curves
+    //https://chicounity3d.wordpress.com/2014/05/23/how-to-lerp-like-a-pro/
     private IEnumerator lerpToTarget(Vector3 target, float duration) {
+        isPosLerping = true;
         float t = 0;
+        //no it doesnt say TEASE its just the variable time for the easing curve
+        float tEase = t / duration;
         while (t < duration) {
-            transform.position = Vector3.Lerp(currentPos, target, t / duration);
+            tEase = Mathf.Sin(t * Mathf.PI * 0.5f);
+            transform.position = Vector3.Lerp(currentPos, target, tEase);
             t += Time.deltaTime;
-            print("Lerping...");
             yield return null;
         }
-        //transform.position = targetPos;
-        print("Lerp Complete");
+        isPosLerping = false;
     }
+
+    private IEnumerator lerpCamSize(float target, float duration) {
+        isFovLerping = true;
+        float t = 0;
+        float tEase = t / duration;
+        while (t < duration) {
+            tEase = t * t * t * (t * (6f * t - 15f) + 10f);
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, target, tEase);
+            t += Time.deltaTime;
+            yield return null;
+        }
+        yield return new WaitForSeconds(duration / 10);
+        isFovLerping = false;
+        print("Ready");
+    }
+
 }
