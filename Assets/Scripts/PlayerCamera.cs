@@ -55,7 +55,7 @@ public class PlayerCamera : MonoBehaviour {
 
 
     private void updatePos() {
-        //cam follows player
+        //cam follows player 
         //cam has regions (defined by "bound" GameObjects) in which it does not move, two per axis
         //i found out later there is a way to do this with math but for now this works so ill keep it
         //
@@ -133,20 +133,6 @@ public class PlayerCamera : MonoBehaviour {
         return false;
 
     }
-    /* todo: when player goes out of frame, force frame onto player 
-     * or, find fix for player going too fast and then sitting out of view when leaving follow bounds
-     * private void onTriggerExit(Collision collision) {
-         if (collision.gameObject.layer != LayerMask.NameToLayer("Player"))
-             print("in frame");
-     }
-     private void onTriggerEnter(Collision collision) {
-         if (collision.gameObject.layer != LayerMask.NameToLayer("Player"))
-             print("not in frame");
-     }
-     private void checkForPlayer() {
-         if (!playerInFrame)
-             forceCamOnPlayer(travelTime);
-     }*/
 
     private void forceCamOnPlayer(float time) {
         StartCoroutine(lerpToTarget(targetPos, time));

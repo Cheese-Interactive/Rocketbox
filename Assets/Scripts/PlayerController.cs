@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour {
     //i know [vvvvvv] is a weird implementation but idc
     private float hMultiplier;
     private float vMultiplier;
+    private float forceAppMax;
 
     [Header("Projectiles")]
     [SerializeField] private GameObject[] projectiles;
@@ -48,6 +50,7 @@ public class PlayerController : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
         collider = GetComponent<Collider2D>();
         maxHealth = health;
+        forceAppMax = forceApp;
     }
 
     // Update is called once per frame
@@ -71,6 +74,15 @@ public class PlayerController : MonoBehaviour {
         }
         StartCoroutine(canActCheck());
         switchWeapon();
+
+        //get the player going (experimental)
+        //todo: add something like this to make switching directions snappier
+        /*  
+         if (rb.totalForce.x <= forceApp && rb.totalForce.y <= forceApp)
+              forceApp *= 10f;
+          else
+              forceApp = forceAppMax; 
+           */
 
         rb.AddForce(transform.up.normalized * forceApp * vMultiplier + transform.right.normalized * forceApp * hMultiplier);
 
@@ -167,6 +179,7 @@ public class PlayerController : MonoBehaviour {
         }
         spriteRb.SetRotation(0); //should be unnecesary 
         canAct = true;
+        checkHealth();
 
     }
 
@@ -186,7 +199,6 @@ public class PlayerController : MonoBehaviour {
             StartCoroutine(playHitAnimation(onHitImmunityTime));
             StartCoroutine(playerImmuneFor(onHitImmunityTime));
             health--;
-            checkHealth();
         }
         else
             print("Player is immune!");
@@ -207,5 +219,10 @@ public class PlayerController : MonoBehaviour {
     private void checkHealth() {
         //to be implemented
         print(health);
+        if (health == 0) {
+            print("Player has died!");
+            EditorApplication.isPlaying = false;
+        }
+
     }
 }

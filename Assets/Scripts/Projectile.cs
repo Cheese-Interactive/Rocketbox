@@ -7,6 +7,8 @@ public class Projectile : MonoBehaviour {
     [SerializeField] private float speed;
     [SerializeField] private int damage;
     [SerializeField] private float cooldown; //time between shots
+    [SerializeField] private float hitForce;
+    private Enemy targetHit;
     private bool hasHitObject = false;
     private Rigidbody2D rb;
 
@@ -15,13 +17,13 @@ public class Projectile : MonoBehaviour {
         rb.gravityScale = 0;
         StartCoroutine(travel(direction));
         return cooldown;
+        rb.mass = hitForce;
     }
 
     protected void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.gameObject.layer != LayerMask.NameToLayer("Player") &&
-        collision.gameObject.layer != LayerMask.NameToLayer("Projectile")) {
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Enemy"))
-                collision.otherCollider.GetComponentInParent<Enemy>(true).enemyHit(damage); //not working, enemy does not take damage
+        if (!collision.gameObject.CompareTag("Player") && !collision.gameObject.CompareTag("Projectile")) {
+            if (collision.gameObject.CompareTag("Enemy"))
+                collision.gameObject.GetComponent<Enemy>().takeDamage(damage);
             hasHitObject = true;
         }
     }
@@ -42,6 +44,10 @@ public class Projectile : MonoBehaviour {
         while (!hasHitObject)
             yield return null;
         Destroy(gameObject);
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     private void OnDestroy() {
