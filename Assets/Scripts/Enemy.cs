@@ -3,12 +3,13 @@ using UnityEngine;
 public class Enemy : MonoBehaviour {
 
     [SerializeField] private float health;
-    private Rigidbody rb;
+    private Rigidbody2D rb;
     private PlayerController player;
     // Start is called before the first frame update
     void Start() {
-        rb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
+        rb.gravityScale = 0f;
     }
 
     // Update is called once per frame

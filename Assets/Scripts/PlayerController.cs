@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour {
     [Header("Health: Hits to die")]
     [SerializeField] private int health;
     [SerializeField] private float onHitImmunityTime;
+    [SerializeField] private float onHitMinLaunchAngle;
+    [SerializeField] private float onHitMaxLaunchAngle;
     private bool isImmune = false;
     private int maxHealth;
 
@@ -19,30 +21,38 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private float downMultiplier = 1;
     [SerializeField] private float leftMultiplier = 1;
     [SerializeField] private float rightMultiplier = 1;
+    private Rigidbody2D rb;
+    //i know [vvvvvv] is a weird implementation but idc
+    private float hMultiplier;
+    private float vMultiplier;
 
     [Header("Projectiles")]
     [SerializeField] private GameObject[] projectiles;
     [SerializeField] private GameObject enemyToSpawn;
     private int currentProjectile = 0;
 
-    private Rigidbody2D rb;
-    //i know [vvvvvv] is a weird implementation but idc
-    private float hMultiplier;
-    private float vMultiplier;
+    [Header("Other")]
+    [SerializeField] private GameObject playerSprite;
+    [SerializeField] private GameObject simpleText; //temporary
+    private Collider2D collider;
+
+
+
 
     private bool canAct = true;
     private bool canShoot = true;
 
-    [SerializeField] private GameObject simpleText;
 
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
+        collider = GetComponent<Collider2D>();
         maxHealth = health;
     }
 
     // Update is called once per frame
     void Update() {
+        playerSprite.transform.position = transform.position;
         //get keys down
         //again, idk how to do it not sus
         //1 is positive input -1 is negative input
@@ -59,6 +69,7 @@ public class PlayerController : MonoBehaviour {
                 hMultiplier *= leftMultiplier;
             shoot();
         }
+        StartCoroutine(canActCheck());
         switchWeapon();
 
         rb.AddForce(transform.up.normalized * forceApp * vMultiplier + transform.right.normalized * forceApp * hMultiplier);
@@ -122,14 +133,43 @@ public class PlayerController : MonoBehaviour {
         canShoot = true;
     }
 
-    private IEnumerator playerImmuneFor(float time, bool disableActions) {
-        canAct = !disableActions;
-        isImmune = true;
+    private IEnumerator playerImmuneFor(float time) {
+        isImmune = true;                          //When player is immune, it cannot take damage              
+        rb.excludeLayers = (1 << 8) | (1 << 7);   //I added ExcludeLayer later so maybe having both is redundant
         yield return new WaitForSeconds(time);
+        rb.excludeLayers = 0;
+        yield return new WaitForSeconds(0.4f); //grace period. fixes some issues
         isImmune = false;
-        if (canAct == false)
-            canAct = true;
     }
+
+    private IEnumerator canActCheck() {
+        //cancel all forces
+        //manually enact gravity
+        float m = rb.mass;
+        float a = -Physics.gravity.magnitude;
+        if (!canAct)
+            rb.totalForce = new Vector2(0, 0);
+        while (!canAct) {
+            rb.totalForce = new Vector3(0, m * a, 0);
+            yield return null;
+        }
+    }
+
+    private IEnumerator playHitAnimation(float duration) {
+        canAct = false;
+        Rigidbody2D spriteRb = playerSprite.GetComponent<Rigidbody2D>();
+        float t = 0;
+        float rotationTarget = (int)duration * 360; //cast to int so it only rotates in full circles, 1 per second
+        while (t < duration) {
+            t += Time.deltaTime;
+            spriteRb.MoveRotation(Mathf.Lerp(0, rotationTarget, t / duration));
+            yield return null;
+        }
+        spriteRb.SetRotation(0); //should be unnecesary 
+        canAct = true;
+
+    }
+
 
     public void setPlayerHealth(int health) {
         health = this.health;
@@ -137,10 +177,14 @@ public class PlayerController : MonoBehaviour {
 
     public void hitPlayer() {
         if (!isImmune) {
-            rb.totalForce = new Vector2(-rb.totalForce.x, -rb.totalForce.y);
+            Vector2 launchVector = new Vector2(
+                Mathf.Cos(Random.Range(onHitMinLaunchAngle, onHitMaxLaunchAngle)), 0);
+            //Vector2 launchVector = new Vector2(0, launchAngle);
             rb.velocity = new Vector2(0, 0);
-            StartCoroutine(playerImmuneFor(onHitImmunityTime, true));
-            rb.AddForce(transform.up * forceApp * 2f, ForceMode2D.Impulse);
+            rb.AddForce(launchVector * forceApp * Random.Range(0.5f, 2.5f), ForceMode2D.Impulse);   //a lot of this could be combined into one big function but idk
+            rb.AddForce(Vector2.up * forceApp * 2f, ForceMode2D.Impulse);
+            StartCoroutine(playHitAnimation(onHitImmunityTime));
+            StartCoroutine(playerImmuneFor(onHitImmunityTime));
             health--;
             checkHealth();
         }

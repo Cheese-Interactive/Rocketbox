@@ -44,10 +44,15 @@ public class PlayerCamera : MonoBehaviour {
     void Update() {
         currentPos = new Vector3(transform.position.x, transform.position.y, layer);
         targetPos = new Vector3(target.transform.position.x, target.transform.position.y + verticalOffset, layer);
-
         updatePos();
         zoomOut();
     }
+
+    /*  private void LateUpdate() {
+          updatePos();
+          zoomOut();
+      }*/
+
 
     private void updatePos() {
         //cam follows player
@@ -64,12 +69,28 @@ public class PlayerCamera : MonoBehaviour {
               transform.position = new Vector3(targetPos.x, currentPos.y, layer);
           else if (inVerticalBounds() && !camFrozen)
               transform.position = new Vector3(currentPos.x, targetPos.y, layer); */
+
+        //i feel like the naming of the bounds is weird and the way i did the methods is equally weird
+        //if you are inBound (past the bounding gameObject), the camera should NOT lerp to the player
         if (inHorizontalBounds() && inVerticalBounds() && !isPosLerping || isZoomedOut)
             StartCoroutine(lerpToTarget(targetPos, travelTime));
-        else if (inHorizontalBounds() && !isPosLerping)
-            StartCoroutine(lerpToTarget(new Vector3(targetPos.x, currentPos.y, layer), travelTime));
-        else if (inVerticalBounds() && !isPosLerping)
-            StartCoroutine(lerpToTarget(new Vector3(currentPos.x, targetPos.y, layer), travelTime));
+        else if (inHorizontalBounds() && inBound(upperBound) && !isPosLerping)
+            StartCoroutine(lerpToTarget(new Vector3(targetPos.x, upperBound.transform.position.y, layer), travelTime));
+        else if (inHorizontalBounds() && inBound(lowerBound) && !isPosLerping)
+            StartCoroutine(lerpToTarget(new Vector3(targetPos.x, lowerBound.transform.position.y, layer), travelTime));
+        else if (inVerticalBounds() && inBound(leftBound) && !isPosLerping)
+            StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, targetPos.y, layer), travelTime));
+        else if (inVerticalBounds() && inBound(rightBound) && !isPosLerping)
+            StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, targetPos.y, layer), travelTime));
+        //corner checks
+        else if (inBound(leftBound) && inBound(upperBound) && !inBound(rightBound))
+            StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, upperBound.transform.position.y, layer), travelTime));
+        else if (inBound(leftBound) && inBound(lowerBound) && !inBound(rightBound))
+            StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, lowerBound.transform.position.y, layer), travelTime));
+        else if (inBound(rightBound) && inBound(upperBound) && !inBound(leftBound))
+            StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, upperBound.transform.position.y, layer), travelTime));
+        else if (inBound(rightBound) && inBound(lowerBound) && !inBound(leftBound))
+            StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, lowerBound.transform.position.y, layer), travelTime));
         //checkForPlayer();
     }
 
@@ -85,7 +106,7 @@ public class PlayerCamera : MonoBehaviour {
             //reset
             StartCoroutine(lerpCamSize(defaultCamSize, zoomTime));
             travelTime *= zoomedTravelTimeModifier;
-            forceCamOnPlayer(zoomTime);
+            //forceCamOnPlayer(zoomTime);
             isZoomedOut = false;
         }
     }
@@ -98,6 +119,19 @@ public class PlayerCamera : MonoBehaviour {
     private bool inVerticalBounds() {
         return targetPos.y >= lowerBound.transform.position.y
                && targetPos.y <= upperBound.transform.position.y;
+    }
+
+    private bool inBound(GameObject bound) {
+        if (bound.Equals(leftBound))
+            return targetPos.x >= leftBound.transform.position.x;
+        if (bound.Equals(rightBound))
+            return targetPos.x <= rightBound.transform.position.x;
+        if (bound.Equals(upperBound))
+            return targetPos.y >= upperBound.transform.position.y;
+        if (bound.Equals(lowerBound))
+            return targetPos.y <= lowerBound.transform.position.y;
+        return false;
+
     }
     /* todo: when player goes out of frame, force frame onto player 
      * or, find fix for player going too fast and then sitting out of view when leaving follow bounds
