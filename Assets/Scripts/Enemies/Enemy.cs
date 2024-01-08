@@ -1,10 +1,14 @@
 using UnityEngine;
 
-public class Enemy : MonoBehaviour {
+public abstract class Enemy : MonoBehaviour {
 
     [SerializeField] private int health;
-    private Rigidbody2D rb;
-    private PlayerController player;
+    [SerializeField] protected float speed;
+    protected Rigidbody2D rb;
+    protected PlayerController player;
+
+    protected abstract void attack();
+    protected abstract void seekPlayer();
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -15,6 +19,8 @@ public class Enemy : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         healthCheck();
+        attack();
+        seekPlayer();
     }
 
     protected void healthCheck() {
@@ -25,17 +31,14 @@ public class Enemy : MonoBehaviour {
         health -= damage;
     }
 
+
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("Player"))
             player.hitPlayer();
     }
 
-    protected void attack() {
-        //The default enemy has no ai and therefore, no attack method
-        //Only damages with collision
-    }
-
     private void OnDestroy() {
 
     }
+
 }

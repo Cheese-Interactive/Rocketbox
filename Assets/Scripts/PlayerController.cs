@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
     [Header("Health: Hits to die")]
     [SerializeField] private int health;
     [SerializeField] private float onHitImmunityTime;
+    [SerializeField] private float postHitGracePeriod;
     [SerializeField] private float onHitMinLaunchAngle;
     [SerializeField] private float onHitMaxLaunchAngle;
     private bool isImmune = false;
@@ -35,8 +36,9 @@ public class PlayerController : MonoBehaviour {
 
     [Header("Other")]
     [SerializeField] private GameObject playerSprite;
+    [SerializeField] private GameObject healthIndicatorSprite;
     [SerializeField] private GameObject simpleText; //temporary
-    private Collider2D collider;
+    private SpriteRenderer healthShower;
 
 
 
@@ -48,9 +50,10 @@ public class PlayerController : MonoBehaviour {
     // Start is called before the first frame update
     void Start() {
         rb = GetComponent<Rigidbody2D>();
-        collider = GetComponent<Collider2D>();
         maxHealth = health;
         forceAppMax = forceApp;
+        healthShower = healthIndicatorSprite.GetComponent<SpriteRenderer>();
+
     }
 
     // Update is called once per frame
@@ -150,7 +153,7 @@ public class PlayerController : MonoBehaviour {
         rb.excludeLayers = (1 << 8) | (1 << 7);   //I added ExcludeLayer later so maybe having both is redundant
         yield return new WaitForSeconds(time);
         rb.excludeLayers = 0;
-        yield return new WaitForSeconds(0.4f); //grace period. fixes some issues
+        yield return new WaitForSeconds(postHitGracePeriod); //grace period. fixes some issues
         isImmune = false;
     }
 
@@ -169,12 +172,14 @@ public class PlayerController : MonoBehaviour {
 
     private IEnumerator playHitAnimation(float duration) {
         canAct = false;
+        updateHealthIndicator();
         Rigidbody2D spriteRb = playerSprite.GetComponent<Rigidbody2D>();
         float t = 0;
         float rotationTarget = (int)duration * 360; //cast to int so it only rotates in full circles, 1 per second
         while (t < duration) {
             t += Time.deltaTime;
             spriteRb.MoveRotation(Mathf.Lerp(0, rotationTarget, t / duration));
+            healthIndicatorSprite.transform.rotation = playerSprite.transform.rotation;
             yield return null;
         }
         spriteRb.SetRotation(0); //should be unnecesary 
@@ -219,10 +224,19 @@ public class PlayerController : MonoBehaviour {
     private void checkHealth() {
         //to be implemented
         print(health);
+        updateHealthIndicator();
         if (health == 0) {
             print("Player has died!");
             EditorApplication.isPlaying = false;
         }
+    }
 
+    private void updateHealthIndicator() {
+        if (health == maxHealth)
+            healthShower.color = Color.green;
+        else if (health < maxHealth && health != 1) //first hit, light yellow. hits after that, light red. killing blow, light turns off. (for action freeze)
+            healthShower.color = Color.yellow;
+        else
+            healthShower.color = Color.red;
     }
 }
