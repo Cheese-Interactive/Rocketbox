@@ -937,8 +937,8 @@ MonoBehaviour:
   - {x: 0.5, y: 0.5, z: 0}
   - {x: 0.5, y: -0.5, z: 0}
   m_ShapePathHash: 0
-  m_Mesh: {fileID: 1124344660}
-  m_InstanceId: -78560
+  m_Mesh: {fileID: 1169182650}
+  m_InstanceId: 28910
   m_LocalBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0.5, y: 0.5, z: 0}
@@ -1773,7 +1773,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 21.95938, y: 0.8713825}
   m_EdgeRadius: 0
---- !u!43 &1124344660
+--- !u!43 &1169182650
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2345,7 +2345,7 @@ MonoBehaviour:
   rightMultiplier: 2
   projectiles:
   - {fileID: 7812196823603378040, guid: 5666269b1329f484087576b7b62dbde9, type: 3}
-  enemyToSpawn: {fileID: 1431105415212773981, guid: 7e840294c41acca48beaaba24a645fbf, type: 3}
+  enemyToSpawn: {fileID: 1431105415212773981, guid: a66ebb75059bb3b49b84ba6c911d01c7, type: 3}
   playerSprite: {fileID: 535805358}
   healthIndicatorSprite: {fileID: 480326341}
   simpleText: {fileID: 412211914}

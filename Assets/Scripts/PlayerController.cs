@@ -1,6 +1,5 @@
 using System.Collections;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -175,7 +174,7 @@ public class PlayerController : MonoBehaviour {
         updateHealthIndicator();
         Rigidbody2D spriteRb = playerSprite.GetComponent<Rigidbody2D>();
         float t = 0;
-        float rotationTarget = (int)duration * 360; //cast to int so it only rotates in full circles, 1 per second
+        float rotationTarget = ((int)duration + Random.Range(0, 2)) * 360; //cast to int so it only rotates in full circles, 1 per second
         while (t < duration) {
             t += Time.deltaTime;
             spriteRb.MoveRotation(Mathf.Lerp(0, rotationTarget, t / duration));
@@ -227,14 +226,15 @@ public class PlayerController : MonoBehaviour {
         updateHealthIndicator();
         if (health == 0) {
             print("Player has died!");
-            EditorApplication.isPlaying = false;
+            //EditorApplication.isPlaying = false; 
+            canAct = false;
         }
     }
 
     private void updateHealthIndicator() {
         if (health == maxHealth)
             healthShower.color = Color.green;
-        else if (health < maxHealth && health != 1) //first hit, light yellow. hits after that, light red. killing blow, light turns off. (for action freeze)
+        else if (health < maxHealth && health > 1) //first hit, light yellow. hits after that, light red. killing blow, light turns off. (for action freeze)
             healthShower.color = Color.yellow;
         else
             healthShower.color = Color.red;

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour {
 
+    #region Variables + abstracted methods
     [SerializeField] private int health;
     [SerializeField] protected float speed;
     protected Rigidbody2D rb;
@@ -9,7 +10,10 @@ public abstract class Enemy : MonoBehaviour {
 
     protected abstract void attack();
     protected abstract void seekPlayer();
-    // Start is called before the first frame update
+    #endregion
+
+    #region Start/Update
+
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
@@ -19,9 +23,12 @@ public abstract class Enemy : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         healthCheck();
-        attack();
         seekPlayer();
+        attack();
     }
+    #endregion
+
+    #region Behavior
 
     protected void healthCheck() {
         if (health <= 0)
@@ -38,7 +45,9 @@ public abstract class Enemy : MonoBehaviour {
     }
 
     private void OnDestroy() {
-
+        // to be implemented
     }
+
+    #endregion
 
 }

@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+
 public class Shooter : Enemy {
     // enemy that doesnt move and shoots at player (a turret)
     // speed is used for its rotation/aim speed
@@ -6,6 +8,8 @@ public class Shooter : Enemy {
     private GameObject turret;
     private Vector3 direction;
     private Vector3 direction2D;
+    [SerializeField] private Projectile projectile;
+    private bool canShoot = true;
 
     protected override void seekPlayer() {
         turret = gameObject.transform.GetChild(0).gameObject;
@@ -17,9 +21,20 @@ public class Shooter : Enemy {
                                                                                            //dodging the pointer instead of the actual projectile
     }
     protected override void attack() {
-        //todo: make projectile type for enemies
-        //no damage value, checks for collision with player
+        Vector3 loc = new Vector3(transform.position.x, transform.position.y, 0);
+        Quaternion rot = Quaternion.identity;
+        if (canShoot)
+            //StartCoroutine(shootCooldown(Instantiate(projectile, loc, rot).GetComponent<Projectile>().initialize(turret.transform.forward)));
+            StartCoroutine(shootCooldown(Instantiate(projectile, loc, rot).GetComponent<Projectile>().initialize(turret.transform.rotation)));
     }
+
+    private IEnumerator shootCooldown(float time) {
+        print("hi");
+        canShoot = false;
+        yield return new WaitForSeconds(time);
+        canShoot = true;
+    }
+    //taken from PlayerController
 
 }
 
