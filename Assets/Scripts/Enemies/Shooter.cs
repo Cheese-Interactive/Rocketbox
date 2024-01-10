@@ -21,11 +21,10 @@ public class Shooter : Enemy {
                                                                                            //dodging the pointer instead of the actual projectile
     }
     protected override void attack() {
-        Vector3 loc = new Vector3(transform.position.x, transform.position.y, 0);
-        Quaternion rot = Quaternion.identity;
+        Vector3 loc = new Vector3(turret.transform.position.x, turret.transform.position.y, 0);
+        Quaternion rot = turret.transform.rotation;
         if (canShoot)
-            //StartCoroutine(shootCooldown(Instantiate(projectile, loc, rot).GetComponent<Projectile>().initialize(turret.transform.forward)));
-            StartCoroutine(shootCooldown(Instantiate(projectile, loc, rot).GetComponent<Projectile>().initialize(turret.transform.rotation)));
+            StartCoroutine(shootCooldown(Instantiate(projectile, loc, turret.transform.rotation).GetComponent<Projectile>().initialize()));
     }
 
     private IEnumerator shootCooldown(float time) {

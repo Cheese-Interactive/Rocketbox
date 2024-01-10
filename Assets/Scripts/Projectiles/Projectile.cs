@@ -17,6 +17,7 @@ public abstract class Projectile : MonoBehaviour {
 
 
     protected abstract IEnumerator travel(float direction);
+    protected abstract IEnumerator travel();
     #endregion
 
     #region Initializers
@@ -31,7 +32,9 @@ public abstract class Projectile : MonoBehaviour {
      * this could be a good thing? either way its kinda weird
      * 
      */
-    //can initialize with angle in degrees, vector2, or vector3
+    //can initialize with angle in degrees 
+    //or, pass quaternion into instantiate, and pass no angle into initialize
+    //i do NOT like the way this is coded but i dont want to go back and redo it rn
     //i dont feel like learning what a quaternion is 
     public float initialize(float direction) {
         rb = GetComponent<Rigidbody2D>();
@@ -46,14 +49,19 @@ public abstract class Projectile : MonoBehaviour {
         }
         return cooldown;
     }
-    public float initialize(Vector2 direction) {
-        return initialize(getAngleFromVector2(direction));
-    }
-    public float initialize(Vector3 direction) {
-        return initialize(getAngleFromVector3(direction));
-    }
-    public float initialize(Quaternion direction) {
-        return initialize(getAngleFromVector3(direction.eulerAngles));
+
+    public float initialize() {
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = gravityModifier;
+        StartCoroutine(travel());
+        rb.mass = hitForce;
+        if (!shouldHitPlayer)
+            rb.excludeLayers = (1 << 3) | (1 << 7);
+        else {
+            damage = 0;
+            rb.excludeLayers = (1 << 8) | (1 << 7);
+        }
+        return cooldown;
     }
     #endregion
 
@@ -68,45 +76,22 @@ public abstract class Projectile : MonoBehaviour {
                 collision.gameObject.GetComponent<PlayerController>().hitPlayer();
         hasHitObject = true;
     }
+
     #endregion
 
-    #region Angle Format Conversion Math
-    //NOTE: everything below is ai generated
-    //i have no idea what any of this does nor would i have been able to make any of this myself
-    //better(?) (and 9999x harder) solution: learn quaternions
+    #region Angle Stuff
+
     protected Vector2 getDirectionVector(float direction) {
         float Radians = Mathf.Deg2Rad * direction;
         return new Vector2(Mathf.Cos(Radians) * speed, Mathf.Sin(Radians) * speed);
     }
 
-    protected float getAngleFromVector3(Vector3 vector) {
-        Vector3 reference = new Vector3(0, 1, 0);
-        float angle = Vector3.Angle(reference, vector);
-        Vector3 cross = Vector3.Cross(reference, vector);
-        if (cross.z > 0) {
-            angle = 360 - angle;
-        }
-        return angle;
+    protected Vector3 getDirectionVector(GameObject other) {
+        Vector3 direction = other.transform.position - transform.position;
+        Vector3 direction2D = Vector3.ProjectOnPlane(direction, Vector3.forward);
+        return direction2D;
     }
 
-    protected float getAngleFromVector2(Vector2 vector) {
-        Vector2 reference = new Vector2(0, 1);
-        float angle = Vector2.Angle(reference, vector);
-        Vector3 cross = Vector3.Cross(reference, vector);
-        if (cross.z > 0) {
-            angle = 360 - angle;
-        }
-        return angle;
-    }
-
-    protected float getAngleFromQuaternion(Quaternion quaternion) {
-        Vector3 forward = Vector3.forward;
-        Vector3 up = Vector3.up;
-        Vector3 rotatedForward = quaternion * forward;
-        Vector3 rotatedUp = quaternion * up;
-        float angle = Mathf.Atan2(rotatedUp.y, rotatedUp.x) * Mathf.Rad2Deg;
-        return angle;
-    }
 
     #endregion
 

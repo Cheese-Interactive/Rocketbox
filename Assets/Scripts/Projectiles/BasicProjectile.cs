@@ -13,6 +13,15 @@ public class BasicProjectile : Projectile {
         Destroy(gameObject);
     }
 
+    protected override IEnumerator travel() {
+        //lookAtThing(GameObject.Find("Player"));
+        rb.velocity = getDirectionVector(GameObject.Find("Player"));
+
+        while (!hasHitObject)
+            yield return null;
+        Destroy(gameObject);
+    }
+
     /* protected override IEnumerator travel(Vector3 direction) {
         //transform.forward = direction;
         rb.velocity = direction * speed * 1000000000;
