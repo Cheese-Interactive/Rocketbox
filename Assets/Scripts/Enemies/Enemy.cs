@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour {
@@ -7,6 +8,7 @@ public abstract class Enemy : MonoBehaviour {
     [SerializeField] protected float speed;
     protected Rigidbody2D rb;
     protected PlayerController player;
+    private bool isDecoy = false;
 
     protected abstract void attack();
     protected abstract void seekPlayer();
@@ -15,16 +17,42 @@ public abstract class Enemy : MonoBehaviour {
     #region Start/Update
 
     void Start() {
+        //StartCoroutine(checkFix());
+
+        if (transform.parent != null)                                                           //does the enemy have a parent?
+            isDecoy = gameObject.transform.parent.gameObject.GetComponent<RoundCreator>();      //if so, is it a RoundCreator? (more details in RoundCreator.cs)
         rb = GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         rb.gravityScale = 0f;
+        if (isDecoy) {
+            Destroy(gameObject.GetComponent<Rigidbody2D>());
+            Destroy(gameObject.GetComponent<Collider2D>());
+            Destroy(gameObject.GetComponent<SpriteRenderer>());
+            gameObject.SetActive(false);
+        }
     }
 
-    // Update is called once per frame
+    private IEnumerator checkFix() {
+        yield return new WaitForEndOfFrame();
+        if (isDecoy) {
+            Destroy(gameObject.GetComponent<Rigidbody2D>());
+            Destroy(gameObject.GetComponent<Collider2D>());
+            //Destroy(gameObject.GetComponent<SpriteRenderer>());
+            //gameObject.SetActive(false);
+        }
+        else {
+            rb = GetComponent<Rigidbody2D>();
+            player = GameObject.Find("Player").GetComponent<PlayerController>();
+            rb.gravityScale = 0f;
+        }
+    }
+
     void Update() {
-        healthCheck();
-        seekPlayer();
-        attack();
+        if (!isDecoy) {
+            seekPlayer();
+            attack();
+            healthCheck();
+        }
     }
     #endregion
 

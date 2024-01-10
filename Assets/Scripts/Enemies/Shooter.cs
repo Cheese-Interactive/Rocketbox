@@ -28,7 +28,6 @@ public class Shooter : Enemy {
     }
 
     private IEnumerator shootCooldown(float time) {
-        print("hi");
         canShoot = false;
         yield return new WaitForSeconds(time);
         canShoot = true;
