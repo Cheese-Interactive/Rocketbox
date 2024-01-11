@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour {
@@ -28,25 +27,7 @@ public abstract class Enemy : MonoBehaviour {
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         rb.gravityScale = 0f;
         if (isDecoy) {
-            Destroy(gameObject.GetComponent<Rigidbody2D>());
-            Destroy(gameObject.GetComponent<Collider2D>());
-            Destroy(gameObject.GetComponent<SpriteRenderer>());
             gameObject.SetActive(false);
-        }
-    }
-
-    private IEnumerator checkFix() {
-        yield return new WaitForEndOfFrame();
-        if (isDecoy) {
-            Destroy(gameObject.GetComponent<Rigidbody2D>());
-            Destroy(gameObject.GetComponent<Collider2D>());
-            //Destroy(gameObject.GetComponent<SpriteRenderer>());
-            //gameObject.SetActive(false);
-        }
-        else {
-            rb = GetComponent<Rigidbody2D>();
-            player = GameObject.Find("Player").GetComponent<PlayerController>();
-            rb.gravityScale = 0f;
         }
     }
 
@@ -62,8 +43,10 @@ public abstract class Enemy : MonoBehaviour {
     #region Behavior
 
     protected void healthCheck() {
-        if (health <= 0)
+        if (health <= 0) {
+            GameObject.FindAnyObjectByType<GameManager>().enemyKilled();
             Destroy(gameObject);
+        }
     }
     public void takeDamage(int damage) {
         health -= damage;
@@ -81,6 +64,12 @@ public abstract class Enemy : MonoBehaviour {
 
     public GameObject getPrefab() {
         return prefab;
+    }
+
+    public void selfDestruct() {
+        Destroy(gameObject.GetComponent<Rigidbody2D>());
+        Destroy(gameObject.GetComponent<Collider2D>());
+        Destroy(gameObject.GetComponent<SpriteRenderer>());
     }
 
     #endregion
