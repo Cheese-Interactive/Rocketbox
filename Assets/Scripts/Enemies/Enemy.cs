@@ -4,8 +4,11 @@ using UnityEngine;
 public abstract class Enemy : MonoBehaviour {
 
     #region Variables + abstracted methods
+    [Header("Basic Stats")]
     [SerializeField] private int health;
     [SerializeField] protected float speed;
+    [Header("Type Specific Stats")]
+    [SerializeField] private GameObject prefab;
     protected Rigidbody2D rb;
     protected PlayerController player;
     private bool isDecoy = false;
@@ -74,6 +77,10 @@ public abstract class Enemy : MonoBehaviour {
 
     private void OnDestroy() {
         // to be implemented
+    }
+
+    public GameObject getPrefab() {
+        return prefab;
     }
 
     #endregion

@@ -172,8 +172,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0149dcab16407ce43aa2f570b70dc47a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 5
+  health: 6
   speed: 0
+  prefab: {fileID: 1431105415212773981}
   projectile: {fileID: 4722127910213928096, guid: b2e359f11a6ef6a429625cfbddb74814, type: 3}
 --- !u!1 &6640172363108894345
 GameObject:

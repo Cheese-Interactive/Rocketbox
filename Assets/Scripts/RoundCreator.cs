@@ -13,17 +13,16 @@ public class RoundCreator : MonoBehaviour {
      * GameManager (GameLogic) uses RoundDefinitions to start and end rounds (to be implemented)
      */
     [SerializeField] private int index;
-    private List<Enemy> enemies = new List<Enemy>();
+    private List<GameObject> enemies = new List<GameObject>();
     private List<Vector3> locations = new List<Vector3>();
     private Round round;
 
     // Start is called before the first frame update
     void Start() {
         for (int i = 0; i < transform.childCount; i++) {
-            Enemy current = transform.GetChild(i).gameObject.GetComponent<Enemy>();
+            GameObject current = transform.GetChild(i).gameObject.GetComponent<Enemy>().getPrefab();
             enemies.Add(current);
             locations.Add(current.transform.position);
-            print(enemies[i] + " " + locations[i]);
         }
         round = new Round(index, enemies, locations);
         //Destroy(gameObject);

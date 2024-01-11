@@ -22,11 +22,18 @@ public class GameLogic : MonoBehaviour {
         }
         if (started == true) {
             startRound(round);
+            started = false;//REMOVE THIS i think this spawn thing needs to be an IEnumerator or smth idk
         }
     }
 
     public void startRound(int round) {
         Round currentRound = rounds[round];
-        //for(int i = 0; i< round. i++) {}
+        List<GameObject> currentEnemies = currentRound.GetObjects();
+        List<Vector3> currentLocations = currentRound.GetLocations();
+        for (int i = 0; i < currentEnemies.Count; i++) {
+            //todo: spawn enemies BASED ON TYPE
+            print("Enemy " + i + " is a " + currentEnemies[i] + " which will be spawned at " + currentLocations[i]);
+        }
+        started = false; //REMOVE THIS i think this spawn thing needs to be an IEnumerator or smth idk
     }
 }
