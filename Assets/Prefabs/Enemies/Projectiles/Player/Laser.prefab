@@ -203,9 +203,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 298539f81c68a3341b33c544ec121a76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 180
+  speed: 160
   damage: 1
-  cooldown: 0.3
+  cooldown: 0.16
   hitForce: 0
   gravityModifier: 0
   shouldHitPlayer: 0

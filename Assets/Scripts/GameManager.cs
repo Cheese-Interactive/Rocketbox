@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ public class GameManager : MonoBehaviour {
     // Start is called before the first frame update
     [SerializeField] RoundCreator[] roundCreators;
     [SerializeField] int startAtRound;
+    [SerializeField] float timeBetweenRounds;
     private List<Round> rounds = new List<Round>();
     private bool started = false;
     private int round;
@@ -27,13 +29,14 @@ public class GameManager : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        print(enemiesLeft);
         if (Input.GetKeyDown(KeyCode.P)) {
             print("Game has started!");
             started = true;
         }
-        if (started && enemiesLeft == 0)
-            startRound(round);
+        if (started && enemiesLeft == 0) {
+            StartCoroutine(roundCooldown(timeBetweenRounds));
+            enemiesLeft = -1; //fixes an issue
+        }
 
     }
 
@@ -66,5 +69,10 @@ public class GameManager : MonoBehaviour {
     public void enemyKilled() {
         if (started)
             enemiesLeft--;
+    }
+
+    private IEnumerator roundCooldown(float seconds) {
+        yield return new WaitForSeconds(seconds);
+        startRound(round);
     }
 }
