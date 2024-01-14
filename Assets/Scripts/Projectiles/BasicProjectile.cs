@@ -13,7 +13,7 @@ public class BasicProjectile : Projectile {
         Destroy(gameObject);
     }
 
-    protected override IEnumerator travel() {
+    protected override IEnumerator travel() { //uses the Quaternion passed in Initialize
         //lookAtThing(GameObject.Find("Player"));
         rb.velocity = getDirectionVector(GameObject.Find("Player"));
 

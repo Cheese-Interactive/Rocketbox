@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TheCirculator : Boss {
+    [Header("Stats")]
     [SerializeField] private int rotationSpeed;
+    [Header("GameObjects")]
     [SerializeField] private GameObject turret;
-    private Vector3 direction;
-    private Vector3 direction2D;
     [SerializeField] private List<GameObject> weakpoints = new List<GameObject>();
+    [SerializeField] private Projectile projectile;
+    [SerializeField] private GameObject projectileOrigin;
     protected List<Collider2D> weakpointColliders = new List<Collider2D>();
     private bool shouldRotate;
     private bool shouldPointTurret;
     private float curActionTime;
     private bool hasPlayedSpawnTaunt;
     private float vMovementBound = 19.5f;
+    private Vector3 direction;
+    private Vector3 direction2D;
 
-    [SerializeField] private Projectile projectile;
 
     // Start is called before the first frame update
     override protected void Initialize() {
@@ -59,7 +62,7 @@ public class TheCirculator : Boss {
             turret.transform.Rotate(new Vector3(0, 0, -720 * Time.deltaTime));
             yield return new WaitForEndOfFrame();
         }
-        shouldRotate = shouldPointTurret = true;
+        shouldRotate = true;
         StartCoroutine(moveToAttackingPhase());
     }
 
@@ -108,6 +111,7 @@ public class TheCirculator : Boss {
         Vector3 smoothPosition = transform.position;
         float followSpeed = 2f;
         float delay = 0.5f;
+        shouldRotate = true;
 
         curActionTime = 15f;
         while (curActionTime > 0) {
@@ -133,15 +137,15 @@ public class TheCirculator : Boss {
 
     private IEnumerator lockTurret(Quaternion direction) {
         turret.transform.rotation = direction;
-        transform.Rotate(new Vector3(0, 0, 1), -rotationSpeed * Time.deltaTime);   //todo: smoothly rotate the turret instead of snapping it into place here
+        turret.transform.Rotate(new Vector3(0, 0, 1), -rotationSpeed * Time.deltaTime);   //todo: smoothly rotate the turret instead of snapping it into place here
         yield return new WaitForEndOfFrame();
     }
 
     private IEnumerator shoot(Quaternion direction) {
         yield return new WaitForSeconds(1);
-        Instantiate(projectile, transform.position, direction).initialize();  //todo: shoot multiple projectiles out
-                                                                              //todo: add bosses into collision logic
-                                                                              //todo: update projectile script more (again)
+        // Instantiate(projectile, transform.position, direction).initialize();  //todo: shoot multiple projectiles out
+        //todo: add bosses into collision logic
+        //todo: update projectile script more (again)
     }
 
     private void resetWeakpoints() {

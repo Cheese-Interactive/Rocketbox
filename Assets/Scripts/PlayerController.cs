@@ -29,9 +29,9 @@ public class PlayerController : MonoBehaviour {
     private float forceAppMax;
 
     [Header("Projectiles")]
-    [SerializeField] private GameObject[] projectiles;
+    [SerializeField] private GameObject[] weapons;
     [SerializeField] private GameObject enemyToSpawn;
-    private int currentProjectile = 0;
+    private int currentWeapon = 0;
 
     [Header("Other")]
     [SerializeField] private GameObject playerSprite;
@@ -105,19 +105,19 @@ public class PlayerController : MonoBehaviour {
         //idk how to condense this
         Vector3 loc = new Vector3(transform.position.x, transform.position.y, 0);
         Quaternion rot = Quaternion.identity;
-        GameObject current = projectiles[currentProjectile];
+        Weapon current = weapons[currentWeapon].GetComponent<Weapon>();
         if (canShoot) {
             if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(180)));
+                StartCoroutine(shootCooldown(current.shoot(loc, 180)));
             }
             if (Input.GetKeyDown(KeyCode.RightArrow)) {
-                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(0)));
+                StartCoroutine(shootCooldown(current.shoot(loc, 0)));
             }
             if (Input.GetKeyDown(KeyCode.UpArrow)) {
-                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(90)));
+                StartCoroutine(shootCooldown(current.shoot(loc, 90)));
             }
             if (Input.GetKeyDown(KeyCode.DownArrow)) {
-                StartCoroutine(shootCooldown(Instantiate(current, loc, rot).GetComponent<Projectile>().initialize(270)));
+                StartCoroutine(shootCooldown(current.shoot(loc, 270)));
             }
         }
 
@@ -125,15 +125,15 @@ public class PlayerController : MonoBehaviour {
 
     private void switchWeapon() {
         if (Input.GetKeyDown(KeyCode.R)) {
-            if (currentProjectile == projectiles.Length - 1) {
-                currentProjectile = 0;
+            if (currentWeapon == weapons.Length - 1) {
+                currentWeapon = 0;
             }
             else
-                currentProjectile++;
+                currentWeapon++;
             //exploit with this switch weapons to skip cooldowns
             canShoot = true;
         }
-        simpleText.GetComponent<TextMeshProUGUI>().text = "Using: " + projectiles[currentProjectile] + " (" + currentProjectile + ")";
+        simpleText.GetComponent<TextMeshProUGUI>().text = "Using: " + weapons[currentWeapon] + " (" + currentWeapon + ")";
 
         //leaving this here for now
         if (Input.GetKeyDown(KeyCode.J)) {

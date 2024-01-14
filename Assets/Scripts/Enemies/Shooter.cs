@@ -8,7 +8,7 @@ public class Shooter : Enemy {
     private GameObject turret;
     private Vector3 direction;
     private Vector3 direction2D;
-    [SerializeField] private Projectile projectile;
+    [SerializeField] private GameObject weapon;
     private bool canShoot = true;
 
     protected override void seekPlayer() {
@@ -22,9 +22,9 @@ public class Shooter : Enemy {
     }
     protected override void attack() {
         Vector3 loc = new Vector3(turret.transform.position.x, turret.transform.position.y, 0);
-        Quaternion rot = turret.transform.rotation;
+        Quaternion rot = turret.transform.rotation.normalized;
         if (canShoot)
-            StartCoroutine(shootCooldown(Instantiate(projectile, loc, turret.transform.rotation).GetComponent<Projectile>().initialize()));
+            StartCoroutine(shootCooldown(weapon.GetComponent<Weapon>().shoot(loc, rot)));
     }
 
     private IEnumerator shootCooldown(float time) {

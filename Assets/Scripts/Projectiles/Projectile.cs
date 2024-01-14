@@ -7,7 +7,6 @@ public abstract class Projectile : MonoBehaviour {
     [Header("Stats")]
     [SerializeField] protected float speed;
     [SerializeField] protected int damage;
-    [SerializeField] protected float cooldown; //time between shots
     [SerializeField] protected float hitForce;
     [SerializeField] protected float gravityModifier;
     [SerializeField] protected bool shouldHitPlayer;
@@ -22,6 +21,9 @@ public abstract class Projectile : MonoBehaviour {
 
     #region Initializers
     //to create a projectile:
+    //IGNORE ALL THIS, ITS ALL CAP AND HAS BEEN CHANGED A LOT
+
+
     /* must have a shootCooldown coroutine in the class of the thing trying to instantiate a projectile
      * when instantiating, start the coroutine, passing in Instantiate(...).Initialize(...) as the cooldown
      * this both instantiates the projectile and returns its cooldown (as well as whatever other stuff it needs to do)
@@ -36,7 +38,7 @@ public abstract class Projectile : MonoBehaviour {
     //or, pass quaternion into instantiate, and pass no angle into initialize
     //i do NOT like the way this is coded but i dont want to go back and redo it rn
     //i dont feel like learning what a quaternion is 
-    public float initialize(float direction) {
+    public void initialize(float direction) {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = gravityModifier;
         StartCoroutine(travel(direction));
@@ -47,10 +49,9 @@ public abstract class Projectile : MonoBehaviour {
             damage = 0;
             rb.excludeLayers = (1 << 8) | (1 << 7);
         }
-        return cooldown;
     }
 
-    public float initialize() {
+    public void initialize() {
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = gravityModifier;
         StartCoroutine(travel());
@@ -61,7 +62,6 @@ public abstract class Projectile : MonoBehaviour {
             damage = 0;
             rb.excludeLayers = (1 << 8) | (1 << 7);
         }
-        return cooldown;
     }
     #endregion
 
@@ -81,15 +81,18 @@ public abstract class Projectile : MonoBehaviour {
 
     #region Angle Stuff
 
+    //trigonometry baby
     protected Vector2 getDirectionVector(float direction) {
         float Radians = Mathf.Deg2Rad * direction;
         return new Vector2(Mathf.Cos(Radians) * speed, Mathf.Sin(Radians) * speed);
     }
 
+    //ai generated (vvvv)
     protected Vector3 getDirectionVector(GameObject other) {
         Vector3 direction = other.transform.position - transform.position;
-        Vector3 direction2D = Vector3.ProjectOnPlane(direction, Vector3.forward);
-        return direction2D;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Vector3 directionVector = new Vector3(Mathf.Cos(angle * Mathf.Deg2Rad) * speed, Mathf.Sin(angle * Mathf.Deg2Rad) * speed, 0);
+        return directionVector;
     }
 
 
