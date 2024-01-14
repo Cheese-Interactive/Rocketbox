@@ -413,13 +413,13 @@ GameObject:
   - component: {fileID: 253199082}
   - component: {fileID: 253199083}
   - component: {fileID: 253199084}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: The Circulator
-  m_TagString: Enemy
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &253199081
 Transform:
   m_ObjectHideFlags: 0
@@ -485,11 +485,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  health: 1
+  health: 10
   onDieMinLaunchAngle: 180
   onDieMaxLaunchAngle: 360
   sprite: {fileID: 217350988}
-  rotationSpeed: 55
+  rotationSpeed: 90
+  strongWeaponCooldown: 0
+  weakWeaponCooldown: 0
   turret: {fileID: 256319345}
   weakpoints:
   - {fileID: 1187098608}
@@ -500,8 +502,9 @@ MonoBehaviour:
   - {fileID: 1903286913}
   - {fileID: 348648130}
   - {fileID: 1597755321}
-  projectile: {fileID: 4722127910213928096, guid: a06472a7180c26343b28af1a82888f6e, type: 3}
-  projectileOrigin: {fileID: 0}
+  strongWeapon: {fileID: 0}
+  weakWeapon: {fileID: 0}
+  projectileOrigin: {fileID: 391501382}
 --- !u!50 &253199084
 Rigidbody2D:
   serializedVersion: 4
@@ -514,7 +517,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 1
-  m_Mass: 1
+  m_Mass: 635.324
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -586,9 +589,9 @@ GameObject:
   - component: {fileID: 348648132}
   - component: {fileID: 348648133}
   - component: {fileID: 348648134}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint (6)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -717,6 +720,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!1 &391501382
 GameObject:
   m_ObjectHideFlags: 0
@@ -741,7 +745,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 391501382}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.587, y: 0, z: 0}
+  m_LocalPosition: {x: -0.414, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -760,9 +764,9 @@ GameObject:
   - component: {fileID: 396748314}
   - component: {fileID: 396748315}
   - component: {fileID: 396748316}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint (1)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -891,6 +895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!4 &397667537 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5403979699984434404, guid: 7e840294c41acca48beaaba24a645fbf, type: 3}
@@ -3575,9 +3580,9 @@ GameObject:
   - component: {fileID: 1111654132}
   - component: {fileID: 1111654133}
   - component: {fileID: 1111654134}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint (4)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3706,6 +3711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!1 &1122738979
 GameObject:
   m_ObjectHideFlags: 0
@@ -3715,7 +3721,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1122738980}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hitpoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3757,9 +3763,9 @@ GameObject:
   - component: {fileID: 1124411142}
   - component: {fileID: 1124411143}
   - component: {fileID: 1124411144}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint (3)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3888,6 +3894,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!43 &1174456126
 Mesh:
   m_ObjectHideFlags: 0
@@ -4065,9 +4072,9 @@ GameObject:
   - component: {fileID: 1187098610}
   - component: {fileID: 1187098611}
   - component: {fileID: 1187098612}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4196,6 +4203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!1 &1203515799
 GameObject:
   m_ObjectHideFlags: 0
@@ -4921,9 +4929,9 @@ GameObject:
   - component: {fileID: 1597755323}
   - component: {fileID: 1597755324}
   - component: {fileID: 1597755325}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint (7)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5052,6 +5060,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!1 &1628825745
 GameObject:
   m_ObjectHideFlags: 0
@@ -5064,7 +5073,7 @@ GameObject:
   - component: {fileID: 1628825747}
   m_Layer: 8
   m_Name: Triangle
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5268,6 +5277,7 @@ MonoBehaviour:
   rightMultiplier: 2
   weapons:
   - {fileID: 4101629485203614365, guid: 732ef5ff72dbd4940ac983e9b790ef54, type: 3}
+  - {fileID: 4101629485203614365, guid: 42a4dbc0c523f184f836fc74702bf42c, type: 3}
   enemyToSpawn: {fileID: 1431105415212773981, guid: a66ebb75059bb3b49b84ba6c911d01c7, type: 3}
   playerSprite: {fileID: 535805358}
   healthIndicatorSprite: {fileID: 480326341}
@@ -5284,9 +5294,9 @@ GameObject:
   - component: {fileID: 1753189446}
   - component: {fileID: 1753189447}
   - component: {fileID: 1753189448}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint (2)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5415,6 +5425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!1 &1753617121
 GameObject:
   m_ObjectHideFlags: 0
@@ -5680,9 +5691,9 @@ GameObject:
   - component: {fileID: 1903286915}
   - component: {fileID: 1903286916}
   - component: {fileID: 1903286917}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HitPoint (5)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5811,6 +5822,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c6dcd6a2df1c64a98932ace3d61bc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parentName: The Circulator
 --- !u!1001 &2120889666
 PrefabInstance:
   m_ObjectHideFlags: 0

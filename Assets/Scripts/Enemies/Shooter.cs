@@ -32,6 +32,8 @@ public class Shooter : Enemy {
         yield return new WaitForSeconds(time);
         canShoot = true;
     }
+
+
     //taken from PlayerController
 
 }

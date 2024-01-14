@@ -130,8 +130,7 @@ public class PlayerController : MonoBehaviour {
             }
             else
                 currentWeapon++;
-            //exploit with this switch weapons to skip cooldowns
-            canShoot = true;
+            StartCoroutine(shootCooldown(weapons[currentWeapon].GetComponent<Weapon>().getCooldown()));
         }
         simpleText.GetComponent<TextMeshProUGUI>().text = "Using: " + weapons[currentWeapon] + " (" + currentWeapon + ")";
 

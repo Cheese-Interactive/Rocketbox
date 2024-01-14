@@ -8,12 +8,13 @@ public class BossWeakpoint : MonoBehaviour {
     private GameObject player;
     private Boss belongsTo;
     private bool vulnerable;
+    [SerializeField] private GameObject parent;
 
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         player = GameObject.Find("Player");
-        belongsTo = transform.parent.parent.gameObject.GetComponent<Boss>();
+        belongsTo = parent.GetComponent<Boss>();
     }
 
     // Update is called once per frame

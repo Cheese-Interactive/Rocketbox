@@ -11,4 +11,8 @@ public abstract class Weapon : MonoBehaviour {
     [SerializeField] protected GameObject projectile;
     public abstract float shoot(Vector3 pos, float degrees);
     public abstract float shoot(Vector3 pos, Quaternion angle);
+
+    public float getCooldown() {
+        return cooldown;
+    }
 }

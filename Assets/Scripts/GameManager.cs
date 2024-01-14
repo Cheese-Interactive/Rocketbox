@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField] RoundCreator[] roundCreators;
     [SerializeField] int startAtRound;
     [SerializeField] float timeBetweenRounds;
+    [SerializeField] private List<GameObject> bosses = new List<GameObject>();
     private List<Round> rounds = new List<Round>();
     private bool started = false;
     private int round;
@@ -43,26 +44,32 @@ public class GameManager : MonoBehaviour {
     public void startRound(int r) {
         enemiesLeft = 0;
         Round currentRound = null;
-        for (int i = 0; i < rounds.Count; i++)
-            if (rounds[i].getIndex() == r)
-                currentRound = rounds[i];
-        if (currentRound == null) {
-            print("ERROR: Round not initialized (check RoundCreator indexes)");
-            return;
-        }
+        if (round % 5 != 0) {
+            for (int i = 0; i < rounds.Count; i++)
+                if (rounds[i].getIndex() == r)
+                    currentRound = rounds[i];
+            if (currentRound == null) {
+                print("ERROR: Round not initialized (check RoundCreator indexes)");
+                return;
+            }
 
 
-        List<Enemy> currentEnemies = currentRound.getEnemies();
-        List<Vector3> currentLocations = currentRound.getLocations();
-        for (int i = 0; i < currentEnemies.Count; i++) {
-            print(currentEnemies.Count + " enemies will be spawned! Using index: " + currentRound.getIndex());
-        }
+            List<Enemy> currentEnemies = currentRound.getEnemies();
+            List<Vector3> currentLocations = currentRound.getLocations();
+            for (int i = 0; i < currentEnemies.Count; i++) {
+                print(currentEnemies.Count + " enemies will be spawned! Using index: " + currentRound.getIndex());
+            }
 
-        for (int i = 0; i < currentEnemies.Count; i++) {
-            Instantiate(currentEnemies[i], currentLocations[i], Quaternion.identity).gameObject.SetActive(true);
-            print("Spawned " + currentEnemies[i] + " at " + currentLocations[i] + " (" + (currentEnemies.Count - i - 1) + " thing(s) to go)");
+            for (int i = 0; i < currentEnemies.Count; i++) {
+                Instantiate(currentEnemies[i], currentLocations[i], Quaternion.identity).gameObject.SetActive(true);
+                print("Spawned " + currentEnemies[i] + " at " + currentLocations[i] + " (" + (currentEnemies.Count - i - 1) + " thing(s) to go)");
+            }
+            enemiesLeft = currentEnemies.Count;
         }
-        enemiesLeft = currentEnemies.Count;
+        else {
+            Instantiate(bosses[Random.Range(0, bosses.Count)], Vector3.zero, Quaternion.identity);
+            enemiesLeft = 1;
+        }
         round++;
     }
 

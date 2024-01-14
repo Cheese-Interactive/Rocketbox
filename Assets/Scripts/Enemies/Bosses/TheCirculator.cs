@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class TheCirculator : Boss {
     [Header("Stats")]
-    [SerializeField] private int rotationSpeed;
+    [SerializeField] private float rotationSpeed;
+    [SerializeField] private float strongWeaponCooldown;
+    [SerializeField] private float weakWeaponCooldown;
+    [SerializeField] private float vulnerableTime;
+    [SerializeField] private float attackingTime;
     [Header("GameObjects")]
     [SerializeField] private GameObject turret;
     [SerializeField] private List<GameObject> weakpoints = new List<GameObject>();
-    [SerializeField] private Projectile projectile;
+    [SerializeField] private GameObject strongWeapon;
+    [SerializeField] private GameObject weakWeapon;
     [SerializeField] private GameObject projectileOrigin;
     protected List<Collider2D> weakpointColliders = new List<Collider2D>();
     private bool shouldRotate;
@@ -18,7 +23,8 @@ public class TheCirculator : Boss {
     private float vMovementBound = 19.5f;
     private Vector3 direction;
     private Vector3 direction2D;
-
+    private bool canShoot;
+    private int weakpointsActive = 0;
 
     // Start is called before the first frame update
     override protected void Initialize() {
@@ -27,6 +33,7 @@ public class TheCirculator : Boss {
             print(weakpoint);
         }
         hasPlayedSpawnTaunt = false;
+        resetWeakpoints();
     }
 
     // Update is called once per frame
@@ -45,17 +52,20 @@ public class TheCirculator : Boss {
         }
 
 
-        if (Input.GetKeyDown(KeyCode.Semicolon)) {
-            resetWeakpoints();
-            enableWeakpoints(Random.Range(3, 5));
+        if (health == 0) {
+            StopAllCoroutines();
+            shouldRotate = false;
+            shouldPointTurret = false;
         }
+
 
         if (curActionTime > 0f)
             curActionTime = curActionTime - (Time.deltaTime);
 
     }
 
-    private IEnumerator spawnTaunt() {                       //from PlayerController hitAnimation
+    private IEnumerator spawnTaunt() {
+        resetWeakpoints();
         curActionTime = 4;
         while (curActionTime > 0) {
             sprite.transform.Rotate(new Vector3(0, 0, 360 * Time.deltaTime));
@@ -98,10 +108,16 @@ public class TheCirculator : Boss {
     private IEnumerator attackingPhase() {
         //determine where turret should point
         Quaternion turretDir = Quaternion.identity;
-        if (transform.position.x > 0)
+        float shootAngle;
+        if (transform.position.x > 0) {
+            turretDir = Quaternion.Euler(0, 0, 0);
+            shootAngle = 180;
+        }
+        else {
             turretDir = Quaternion.Euler(0, 0, 180);
-        else
-            turretDir = Quaternion.Euler(0, 0, -180);
+            shootAngle = 0;
+        }
+
 
 
         //stick to player Y
@@ -112,11 +128,13 @@ public class TheCirculator : Boss {
         float followSpeed = 2f;
         float delay = 0.5f;
         shouldRotate = true;
+        canShoot = true;
 
-        curActionTime = 15f;
+        curActionTime = attackingTime;
         while (curActionTime > 0) {
             StartCoroutine(lockTurret(turretDir));
-            StartCoroutine(shoot(turretDir));
+            if (canShoot)
+                StartCoroutine(shootStrongBlaster(shootAngle));
             if (player.transform.position.y < vMovementBound && player.transform.position.y > -vMovementBound)
                 target = new Vector3(transform.position.x, player.transform.position.y, 0);
             else if (player.transform.position.y > vMovementBound)
@@ -127,8 +145,47 @@ public class TheCirculator : Boss {
             transform.position = Vector3.Lerp(transform.position, smoothPosition, delay);
             yield return null;
         }
+        StartCoroutine(moveToVulnerablePhase());
 
     }
+
+    private IEnumerator moveToVulnerablePhase() {
+        //pick a side
+        shouldPointTurret = true;
+        float t = 0;
+        float duration = 0.8f;
+        Vector3 startPosition = transform.position;
+
+        while (t < duration) {
+            transform.position = Vector3.Lerp(startPosition, Vector3.zero, t / duration);
+            t += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = Vector3.zero;
+
+        StartCoroutine(vulnerablePhase());
+
+    }
+
+    private IEnumerator vulnerablePhase() {
+        curActionTime = vulnerableTime;
+        resetWeakpoints();
+        enableWeakpoints(Random.Range(2, 5));
+        while (curActionTime > 0) {
+            if (canShoot)
+                StartCoroutine(shootWeakBlaster());
+            if (weakpointsActive == 0) {
+                weakpointsActive = -1;
+                curActionTime = 0.2f;
+            }
+            yield return null;
+        }
+
+        resetWeakpoints();
+        StartCoroutine(moveToAttackingPhase());
+    }
+
+
     private void OnCollisionEnter2D(Collision2D collision) {
         if (collision.gameObject.CompareTag("Player"))
             player.GetComponent<PlayerController>().hitPlayer();
@@ -141,14 +198,26 @@ public class TheCirculator : Boss {
         yield return new WaitForEndOfFrame();
     }
 
-    private IEnumerator shoot(Quaternion direction) {
-        yield return new WaitForSeconds(1);
-        // Instantiate(projectile, transform.position, direction).initialize();  //todo: shoot multiple projectiles out
-        //todo: add bosses into collision logic
-        //todo: update projectile script more (again)
+    private IEnumerator shootStrongBlaster(float angle) {
+        canShoot = false;
+        yield return new WaitForSeconds(strongWeaponCooldown);
+        strongWeapon.GetComponent<Weapon>().shoot(projectileOrigin.transform.position, angle);
+        canShoot = true;
     }
 
+    private IEnumerator shootWeakBlaster() {
+        canShoot = false;
+        Quaternion rot = turret.transform.rotation.normalized;
+        yield return new WaitForSeconds(weakWeaponCooldown);
+        weakWeapon.GetComponent<Weapon>().shoot(projectileOrigin.transform.position, rot);
+        canShoot = true;
+    }
+
+
+
+
     private void resetWeakpoints() {
+        weakpointsActive = 0;
         foreach (GameObject weakpoint in weakpoints)
             weakpoint.GetComponent<BossWeakpoint>().isVulnerable(false);
     }
@@ -156,15 +225,16 @@ public class TheCirculator : Boss {
     private void enableWeakpoints(int count) {
         if (count > weakpoints.Count)
             count = weakpoints.Count;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++) {
             weakpoints[Random.Range(0, weakpoints.Count)].GetComponent<BossWeakpoint>().isVulnerable(true);
+            weakpointsActive++;
+        }
     }
 
-    private List<int> generateNums(int count) {
-        List<int> nums = new List<int>();
-        for (int i = 0; i < count; i++) {                        //TODO: Implement this (generates 3 UNIQUE random nums)
-            nums.Add(Random.Range(0, weakpoints.Count));         //is it even worth it?
-        }
-        return null;
+    new public void getHit() {
+        health--;
+        weakpointsActive--;
+        print(health);
     }
+
 }

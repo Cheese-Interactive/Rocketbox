@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4664679138837835118}
   - component: {fileID: 1873780583485078728}
   m_Layer: 0
-  m_Name: LaserGun
+  m_Name: TheCirculator'sWeakBlaster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,4 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cooldown: 0.19231243
-  projectile: {fileID: 7812196823603378040, guid: 6e10db21e484b654d9439c4666afdcf5, type: 3}
+  projectile: {fileID: 7812196823603378040, guid: e7ba7be4a3e05834ab7a208742487bcf, type: 3}
