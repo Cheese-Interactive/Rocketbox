@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField] int startAtRound;
     [SerializeField] float timeBetweenRounds;
     [SerializeField] private List<GameObject> bosses = new List<GameObject>();
+    [SerializeField] private GameObject spawnIndicator;
+    [SerializeField] private GameObject bossSpawnIndicator;
     private List<Round> rounds = new List<Round>();
     private bool started = false;
     private int round;
@@ -57,20 +59,34 @@ public class GameManager : MonoBehaviour {
             List<Enemy> currentEnemies = currentRound.getEnemies();
             List<Vector3> currentLocations = currentRound.getLocations();
             for (int i = 0; i < currentEnemies.Count; i++) {
-                print(currentEnemies.Count + " enemies will be spawned! Using index: " + currentRound.getIndex());
+                print(currentEnemies.Count + " enemies will be spawned! Using round index: " + currentRound.getIndex());
             }
-
             for (int i = 0; i < currentEnemies.Count; i++) {
-                Instantiate(currentEnemies[i], currentLocations[i], Quaternion.identity).gameObject.SetActive(true);
-                print("Spawned " + currentEnemies[i] + " at " + currentLocations[i] + " (" + (currentEnemies.Count - i - 1) + " thing(s) to go)");
+                Instantiate(spawnIndicator, currentLocations[i], Quaternion.identity);
             }
+            StartCoroutine(waitThenSpawnEnemies(timeBetweenRounds, currentEnemies, currentLocations));
+
             enemiesLeft = currentEnemies.Count;
         }
         else {
-            Instantiate(bosses[Random.Range(0, bosses.Count)], Vector3.zero, Quaternion.identity);
+            Instantiate(bossSpawnIndicator, Vector3.zero, Quaternion.identity);
+            StartCoroutine(waitThenSpawnBoss(timeBetweenRounds * 1.6f, bosses[Random.Range(0, bosses.Count)]));
+
             enemiesLeft = 1;
         }
         round++;
+    }
+
+    private IEnumerator waitThenSpawnEnemies(float seconds, List<Enemy> currentEnemies, List<Vector3> currentLocations) {
+        yield return new WaitForSeconds(seconds);
+        for (int i = 0; i < currentEnemies.Count; i++) {
+            Instantiate(currentEnemies[i], currentLocations[i], Quaternion.identity).gameObject.SetActive(true);
+            print("Spawned " + currentEnemies[i] + " at " + currentLocations[i] + " (" + (currentEnemies.Count - i - 1) + " thing(s) to go)");
+        }
+    }
+    private IEnumerator waitThenSpawnBoss(float seconds, GameObject boss) {
+        yield return new WaitForSeconds(seconds);
+        Instantiate(boss, Vector3.zero, Quaternion.identity);
     }
 
     public void enemyKilled() {
@@ -82,4 +98,6 @@ public class GameManager : MonoBehaviour {
         yield return new WaitForSeconds(seconds);
         startRound(round);
     }
+
+
 }

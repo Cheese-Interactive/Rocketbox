@@ -220,10 +220,9 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void checkHealth() {
-        //to be implemented
         print(health);
         updateHealthIndicator();
-        if (health == 0) {
+        if (health <= 0) {
             print("Player has died!");
             //EditorApplication.isPlaying = false; 
             canAct = false;

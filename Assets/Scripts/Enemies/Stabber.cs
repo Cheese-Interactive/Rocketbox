@@ -12,8 +12,8 @@ public class Stabber : Enemy {
 
     protected override void attack() {
         if (shouldDash) {
-            rb.AddForce(transform.right * speed * rb.mass);
             StartCoroutine(dashWait(dashCooldown));
+            rb.AddForce(transform.right * speed * rb.mass);
         }
     }
 

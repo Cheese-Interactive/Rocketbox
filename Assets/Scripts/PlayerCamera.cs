@@ -41,7 +41,7 @@ public class PlayerCamera : MonoBehaviour {
         cam = GetComponent<Camera>();
         cam.orthographicSize = defaultCamSize;
     }
-    void Update() {
+    void LateUpdate() {
         currentPos = new Vector3(transform.position.x, transform.position.y, layer);
         targetPos = new Vector3(target.transform.position.x, target.transform.position.y + verticalOffset, layer);
         updatePos();
