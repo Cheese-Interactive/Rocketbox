@@ -172,7 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5d2529c2580df843847fe9c2241c803, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 2
+  health: 1
   speed: 2700
   prefab: {fileID: 1431105415212773981}
   dashCooldown: 2

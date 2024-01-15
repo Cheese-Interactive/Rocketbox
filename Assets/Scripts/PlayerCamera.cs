@@ -28,9 +28,15 @@ public class PlayerCamera : MonoBehaviour {
     [SerializeField] private float defaultCamSize;
     [SerializeField] private float zoomCamSize;
     [SerializeField] private float zoomTime;
+
+    [Header("Action Freeze")]
+    [SerializeField] private float actionFreezeTime;
+    [SerializeField] private float actionFreezeZoomDuration; // always: this < actionFreezeTime / 2
+    [SerializeField] private float actionFreezeCamSize;
     private bool isPosLerping = false;
     private bool isFovLerping = false;
     private bool isZoomedOut = false;
+    private bool isInActionFreeze = false;
 
 
 
@@ -46,6 +52,10 @@ public class PlayerCamera : MonoBehaviour {
         targetPos = new Vector3(target.transform.position.x, target.transform.position.y + verticalOffset, layer);
         updatePos();
         zoomOut();
+
+        if (Input.GetKeyDown(KeyCode.Semicolon)) {
+            StartCoroutine(actionFreeze());
+        }
     }
 
     /*  private void LateUpdate() {
@@ -62,50 +72,53 @@ public class PlayerCamera : MonoBehaviour {
         //this first if statement (plus the else on the other 2) solves an issue
         //without it, the camera only moved horizontally when you were inside the area where the cam couldnt move veritcally (smth like that)
 
-        /*  old code: no lerping
-         *  if (inHorizontalBounds() && inVerticalBounds() && !camFrozen)
-              transform.position = targetPos;
-          else if (inHorizontalBounds() && !camFrozen)
-              transform.position = new Vector3(targetPos.x, currentPos.y, layer);
-          else if (inVerticalBounds() && !camFrozen)
-              transform.position = new Vector3(currentPos.x, targetPos.y, layer); */
+        if (inHorizontalBounds() && inVerticalBounds() || isInActionFreeze)
+            transform.position = targetPos;
+        else if (inHorizontalBounds())
+            transform.position = new Vector3(targetPos.x, currentPos.y, layer);
+        else if (inVerticalBounds())
+            transform.position = new Vector3(currentPos.x, targetPos.y, layer);
 
-        //i feel like the naming of the bounds is weird and the way i did the methods is equally weird
+        //code for lerping
+        //had to remove because it didnt work in build. planning to bring it back later
+        //
         //if you are inBound (past the bounding gameObject), the camera should NOT lerp to the player
-        if (inHorizontalBounds() && inVerticalBounds() && !isPosLerping || isZoomedOut)
-            StartCoroutine(lerpToTarget(targetPos, travelTime));
-        else if (inHorizontalBounds() && inBound(upperBound) && !isPosLerping)
-            StartCoroutine(lerpToTarget(new Vector3(targetPos.x, upperBound.transform.position.y, layer), travelTime));
-        else if (inHorizontalBounds() && inBound(lowerBound) && !isPosLerping)
-            StartCoroutine(lerpToTarget(new Vector3(targetPos.x, lowerBound.transform.position.y, layer), travelTime));
-        else if (inVerticalBounds() && inBound(leftBound) && !isPosLerping)
-            StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, targetPos.y, layer), travelTime));
-        else if (inVerticalBounds() && inBound(rightBound) && !isPosLerping)
-            StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, targetPos.y, layer), travelTime));
-        //corner checks
-        else if (inBound(leftBound) && inBound(upperBound) && !inBound(rightBound))
-            StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, upperBound.transform.position.y, layer), travelTime));
-        else if (inBound(leftBound) && inBound(lowerBound) && !inBound(rightBound))
-            StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, lowerBound.transform.position.y, layer), travelTime));
-        else if (inBound(rightBound) && inBound(upperBound) && !inBound(leftBound))
-            StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, upperBound.transform.position.y, layer), travelTime));
-        else if (inBound(rightBound) && inBound(lowerBound) && !inBound(leftBound))
-            StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, lowerBound.transform.position.y, layer), travelTime));
+        /*   if (inHorizontalBounds() && inVerticalBounds() && !isPosLerping || isZoomedOut)
+               StartCoroutine(lerpToTarget(targetPos, travelTime));
+           else if (inHorizontalBounds() && inBound(upperBound) && !isPosLerping)
+               StartCoroutine(lerpToTarget(new Vector3(targetPos.x, upperBound.transform.position.y, layer), travelTime));
+           else if (inHorizontalBounds() && inBound(lowerBound) && !isPosLerping)
+               StartCoroutine(lerpToTarget(new Vector3(targetPos.x, lowerBound.transform.position.y, layer), travelTime));
+           else if (inVerticalBounds() && inBound(leftBound) && !isPosLerping)
+               StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, targetPos.y, layer), travelTime));
+           else if (inVerticalBounds() && inBound(rightBound) && !isPosLerping)
+               StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, targetPos.y, layer), travelTime));
+           //corner checks
+           else if (inBound(leftBound) && inBound(upperBound) && !inBound(rightBound))
+               StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, upperBound.transform.position.y, layer), travelTime));
+           else if (inBound(leftBound) && inBound(lowerBound) && !inBound(rightBound))
+               StartCoroutine(lerpToTarget(new Vector3(rightBound.transform.position.x, lowerBound.transform.position.y, layer), travelTime));
+           else if (inBound(rightBound) && inBound(upperBound) && !inBound(leftBound))
+               StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, upperBound.transform.position.y, layer), travelTime));
+           else if (inBound(rightBound) && inBound(lowerBound) && !inBound(leftBound))
+               StartCoroutine(lerpToTarget(new Vector3(leftBound.transform.position.x, lowerBound.transform.position.y, layer), travelTime));*/
         //checkForPlayer();
     }
 
     private void zoomOut() {
         //BUG: when exiting full scene view while player is out of camera bounds, it takes a second for the camera to sync back up
-        if (Input.GetKeyDown(KeyCode.Space) && !isFovLerping && !isZoomedOut) {
+        if (Input.GetKeyDown(KeyCode.Space) && !isFovLerping && !isZoomedOut && !isInActionFreeze) {
             StartCoroutine(lerpCamSize(zoomCamSize, zoomTime));
             transform.position = currentPos;
-            travelTime /= zoomedTravelTimeModifier;
+            //for lerping(vvv)
+            //travelTime /= zoomedTravelTimeModifier;
             isZoomedOut = true;
         }
         if (!Input.GetKey(KeyCode.Space) && isZoomedOut && !isFovLerping) {
             //reset
             StartCoroutine(lerpCamSize(defaultCamSize, zoomTime));
-            travelTime *= zoomedTravelTimeModifier;
+            //for lerping(vvv)
+            //travelTime *= zoomedTravelTimeModifier;
             //forceCamOnPlayer(zoomTime);
             isZoomedOut = false;
         }
@@ -148,7 +161,7 @@ public class PlayerCamera : MonoBehaviour {
         while (t < duration) {
             tEase = Mathf.Sin(t * Mathf.PI * 0.5f);
             transform.position = Vector3.Lerp(currentPos, target, tEase);
-            t += Time.deltaTime;
+            t += Time.unscaledDeltaTime;
             yield return null;
         }
         isPosLerping = false;
@@ -161,10 +174,39 @@ public class PlayerCamera : MonoBehaviour {
         while (t < duration) {
             tEase = (float)System.Math.Pow(t, 3) * (t * (6f * t - 15f) + 10f);
             cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, target, tEase);
-            t += Time.deltaTime;
+            t += Time.unscaledDeltaTime;
             yield return null;
         }
         isFovLerping = false;
+    }
+
+    private IEnumerator lerpCamSizeLinear(float target, float duration) {
+        isFovLerping = true;
+        float t = 0;
+        while (t < duration) {
+            cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, target, t / duration);
+            t += Time.unscaledDeltaTime;
+            yield return null;
+        }
+        isFovLerping = false;
+    }
+
+    private IEnumerator actionFreeze() {
+        print("wsg");
+        isInActionFreeze = true;
+        StartCoroutine(lerpCamSizeLinear(actionFreezeCamSize, actionFreezeZoomDuration));
+        yield return new WaitForSecondsRealtime(actionFreezeTime);
+        StartCoroutine(lerpCamSize(defaultCamSize, actionFreezeZoomDuration));
+        yield return new WaitForSecondsRealtime(actionFreezeZoomDuration);
+        isInActionFreeze = false;
+    }
+
+    public void startActionFreeze() {
+        StartCoroutine(actionFreeze());
+    }
+
+    public float getFreezeTime() {
+        return actionFreezeTime;
     }
 
 }

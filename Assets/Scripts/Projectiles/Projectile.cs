@@ -95,6 +95,11 @@ public abstract class Projectile : MonoBehaviour {
         return directionVector;
     }
 
+    protected IEnumerator queueForDeletion() {
+        yield return new WaitForSeconds(0.0001f); //allows you to still see the projectile when you get hit and time freezes
+        Destroy(gameObject);
+    }
+
 
     #endregion
 

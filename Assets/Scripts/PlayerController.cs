@@ -32,12 +32,17 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private GameObject[] weapons;
     [SerializeField] private GameObject enemyToSpawn;
     private int currentWeapon = 0;
+    private PlayerCamera cam;
 
     [Header("Other")]
     [SerializeField] private GameObject playerSprite;
     [SerializeField] private GameObject healthIndicatorSprite;
     [SerializeField] private GameObject simpleText; //temporary
+    [SerializeField] private Color lightBaseColor;
+    [SerializeField] private Color lightOnHitColor;
     private SpriteRenderer healthShower;
+    private PlayerSpotlight playerLight;
+
 
 
 
@@ -52,7 +57,8 @@ public class PlayerController : MonoBehaviour {
         maxHealth = health;
         forceAppMax = forceApp;
         healthShower = healthIndicatorSprite.GetComponent<SpriteRenderer>();
-
+        cam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
+        playerLight = GameObject.Find("PlayerLight").GetComponent<PlayerSpotlight>();
     }
 
     // Update is called once per frame
@@ -193,6 +199,7 @@ public class PlayerController : MonoBehaviour {
 
     public void hitPlayer() {
         if (!isImmune) {
+            StartCoroutine(actionFreeze());
             Vector2 launchVector = new Vector2(
                 Mathf.Cos(Random.Range(onHitMinLaunchAngle, onHitMaxLaunchAngle)), 0);
             //Vector2 launchVector = new Vector2(0, launchAngle);
@@ -206,6 +213,15 @@ public class PlayerController : MonoBehaviour {
         else
             print("Player is immune!");
 
+    }
+
+    private IEnumerator actionFreeze() {
+        playerLight.changeColor(lightBaseColor, lightOnHitColor);
+        cam.startActionFreeze();
+        Time.timeScale = 0f;
+        yield return new WaitForSecondsRealtime(cam.getFreezeTime());
+        playerLight.changeColor(lightOnHitColor, lightBaseColor);
+        Time.timeScale = 1f;
     }
 
     public void healPlayer(int heal) {

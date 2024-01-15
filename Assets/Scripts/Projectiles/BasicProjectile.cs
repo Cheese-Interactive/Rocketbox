@@ -19,7 +19,7 @@ public class BasicProjectile : Projectile {
 
         while (!hasHitObject)
             yield return null;
-        Destroy(gameObject);
+        StartCoroutine(queueForDeletion());
     }
 
     /* protected override IEnumerator travel(Vector3 direction) {
