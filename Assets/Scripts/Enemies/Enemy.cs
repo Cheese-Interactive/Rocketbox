@@ -11,6 +11,7 @@ public abstract class Enemy : MonoBehaviour {
     protected Rigidbody2D rb;
     protected PlayerController player;
     private bool isDecoy = false;
+    protected bool hasAttackedOnce = false;
 
     protected abstract void attack();
     protected abstract void seekPlayer();

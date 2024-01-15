@@ -15,16 +15,23 @@ public class Shooter : Enemy {
         turret = gameObject.transform.GetChild(0).gameObject;
         direction = player.transform.position - transform.position;
         direction2D = Vector3.ProjectOnPlane(direction, Vector3.forward);
-        turret.transform.rotation = Quaternion.FromToRotation(Vector3.right, direction2D); //considering: add (abstract?) lookAtPlayer method in Enemy
-                                                                                           //todo: PrecisionShooter: slowly lerps rotation instead of just pointing
-                                                                                           //has laser pointer (2d light) and when that is on the player, it shoots a very fast projectile
-                                                                                           //dodging the pointer instead of the actual projectile
+        turret.transform.rotation = Quaternion.FromToRotation(Vector3.right, direction2D);
+
+        //considering: add (abstract?) lookAtPlayer method in Enemy
+        //todo: PrecisionShooter: slowly lerps rotation instead of just pointing
+        //has laser pointer (2d light) and when that is on the player, it shoots a very fast projectile
+        //dodging the pointer instead of the actual projectile
     }
     protected override void attack() {
         Vector3 loc = new Vector3(turret.transform.position.x, turret.transform.position.y, 0);
         Quaternion rot = turret.transform.rotation.normalized;
-        if (canShoot)
+        if (canShoot && hasAttackedOnce)
             StartCoroutine(shootCooldown(weapon.GetComponent<Weapon>().shoot(loc, rot)));
+        else if (!hasAttackedOnce) {
+            StartCoroutine(shootCooldown(weapon.GetComponent<Weapon>().getCooldown() * Random.Range(0.3f, 0.6f)));
+            hasAttackedOnce = true;
+        }
+
     }
 
     private IEnumerator shootCooldown(float time) {

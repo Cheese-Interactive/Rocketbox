@@ -11,9 +11,13 @@ public class Stabber : Enemy {
     private Vector3 direction2D;
 
     protected override void attack() {
-        if (shouldDash) {
+        if (shouldDash && hasAttackedOnce) {
             StartCoroutine(dashWait(dashCooldown));
             rb.AddForce(transform.right * speed * rb.mass);
+        }
+        else if (!hasAttackedOnce) {
+            StartCoroutine(dashWait(dashCooldown * Random.Range(0.2f, 0.4f)));
+            hasAttackedOnce = true;
         }
     }
 
