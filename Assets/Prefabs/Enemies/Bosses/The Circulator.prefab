@@ -776,10 +776,10 @@ MonoBehaviour:
   onDieMaxLaunchAngle: 360
   sprite: {fileID: 1333935923292171532}
   rotationSpeed: 90
-  strongWeaponCooldown: 1.2
-  weakWeaponCooldown: 0.6
+  strongWeaponCooldown: 0.7423412
+  weakWeaponCooldown: 0.5
   vulnerableTime: 10
-  attackingTime: 8.2
+  attackingTime: 7.8
   turret: {fileID: 9211828772473166326}
   weakpoints:
   - {fileID: 571113844061012298}

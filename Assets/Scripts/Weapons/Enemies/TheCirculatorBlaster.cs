@@ -24,22 +24,8 @@ public class TheCirculatorBlaster : Weapon {
         return cooldown;
     }
 
-    //partially ai generated
-    //i do not know how to work with quaternions so i used ai for that
     override public float shoot(Vector3 pos, Quaternion angle) {
-        bloomAngle = bloom / projectilesToShoot;
-        Vector3 euler = angle.eulerAngles;
-        if (euler.z == 0)
-            for (int i = 0; i < projectilesToShoot; i++) {
-                Instantiate(projectile, pos, Quaternion.identity).GetComponent<Projectile>().initialize(euler.z + bloom - bloomAngle * i);
-            }
-        else if (euler.z == 180)
-            for (int i = 0; i < projectilesToShoot; i++) {
-                euler.z += bloomAngle;
-                Instantiate(projectile, pos, Quaternion.identity).GetComponent<Projectile>().initialize(euler.z - bloom + bloomAngle * i);
-            }
-
-        bloomAngle = bloom / projectilesToShoot;
+        //unsupported
         return cooldown;
     }
 }

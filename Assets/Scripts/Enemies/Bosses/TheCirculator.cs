@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class TheCirculator : Boss {
+
+    #region Variables
     [Header("Stats")]
     [SerializeField] private float rotationSpeed;
     [SerializeField] private float strongWeaponCooldown;
@@ -20,11 +22,15 @@ public class TheCirculator : Boss {
     private bool shouldPointTurret;
     private float curActionTime;
     private bool hasPlayedSpawnTaunt;
-    private float vMovementBound = 19.5f;
+    private float vMovementBound = 21f;
     private Vector3 direction;
     private Vector3 direction2D;
     private bool canShoot;
     private int weakpointsActive = 0;
+
+    #endregion
+
+    #region behavior/phases
 
     // Start is called before the first frame update
     override protected void Initialize() {
@@ -192,6 +198,10 @@ public class TheCirculator : Boss {
 
     }
 
+    #endregion
+
+    #region Actions
+
     private IEnumerator lockTurret(Quaternion direction) {
         turret.transform.rotation = direction;
         turret.transform.Rotate(new Vector3(0, 0, 1), -rotationSpeed * Time.deltaTime);   //todo: smoothly rotate the turret instead of snapping it into place here
@@ -214,8 +224,6 @@ public class TheCirculator : Boss {
     }
 
 
-
-
     private void resetWeakpoints() {
         weakpointsActive = 0;
         foreach (GameObject weakpoint in weakpoints)
@@ -236,5 +244,7 @@ public class TheCirculator : Boss {
         weakpointsActive--;
         print(health);
     }
+
+    #endregion
 
 }

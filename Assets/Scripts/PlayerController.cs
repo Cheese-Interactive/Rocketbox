@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -40,6 +41,11 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private GameObject simpleText; //temporary
     [SerializeField] private Color lightBaseColor;
     [SerializeField] private Color lightOnHitColor;
+    [SerializeField] private ParticleSystem leftThruster;
+    [SerializeField] private ParticleSystem rightThruster;
+    [SerializeField] private ParticleSystem upThruster;
+    [SerializeField] private ParticleSystem downThruster;
+    private List<ParticleSystem> thrusters = new List<ParticleSystem>();
     private SpriteRenderer healthShower;
     private PlayerSpotlight playerLight;
 
@@ -59,6 +65,11 @@ public class PlayerController : MonoBehaviour {
         healthShower = healthIndicatorSprite.GetComponent<SpriteRenderer>();
         cam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
         playerLight = GameObject.Find("PlayerLight").GetComponent<PlayerSpotlight>();
+        thrusters.Add(leftThruster);
+        thrusters.Add(rightThruster);
+        thrusters.Add(downThruster);
+        thrusters.Add(upThruster);
+
     }
 
     // Update is called once per frame
@@ -80,6 +91,7 @@ public class PlayerController : MonoBehaviour {
                 hMultiplier *= leftMultiplier;
             shoot();
         }
+        playParticles();
         StartCoroutine(canActCheck());
         switchWeapon();
 
@@ -92,19 +104,61 @@ public class PlayerController : MonoBehaviour {
               forceApp = forceAppMax; 
            */
 
-        rb.AddForce(transform.up.normalized * forceApp * vMultiplier + transform.right.normalized * forceApp * hMultiplier);
+        rb.AddForce(transform.up * forceApp * vMultiplier + transform.right * forceApp * hMultiplier);
 
         //print(System.Math.Abs(rb.totalForce.x) + " " + System.Math.Abs(rb.totalForce.y));
-        //janky way of adding a max force. it doesnt work super cleanly but it works
-        if (System.Math.Abs(rb.totalForce.x) > maxForce)                           //cant go left or right too fast
-            rb.AddForce(-transform.right * forceApp * hMultiplier);
+        //janky way of adding a max force
+        if (rb.totalForce.x > maxForce)
+            rb.totalForce = new Vector2(maxForce, rb.totalForce.y);
+        if (rb.totalForce.x < -maxForce)                           //cant go left or right too fast
+            rb.totalForce = new Vector2(-maxForce, rb.totalForce.y);
         if (rb.totalForce.y > maxForce)                                            //cant go up too fast
-            rb.AddForce(-transform.up * forceApp * vMultiplier);
+            rb.totalForce = new Vector2(rb.totalForce.x, maxForce);
         if (rb.totalForce.y < -maxForce && Input.GetAxisRaw("Vertical") != 0)      //falling has no limit, thrusting down has a limit
-            rb.AddForce(-transform.up * forceApp * vMultiplier);                   //not sure how big of a difference this makes and also has potential issues
+            rb.totalForce = new Vector2(rb.totalForce.x, -maxForce);                 //not sure how big of a difference this makes and also has potential issues
 
 
 
+    }
+
+    //this whole script is bad and doesnt work, needs to be re coded
+    private void playParticles() {
+        /*bool isRightThrusterActive = Input.GetAxisRaw("Horizontal") == -1;
+        bool isLeftThrusterActive = Input.GetAxisRaw("Horizontal") == 1;
+        bool isUpThrusterActive = Input.GetAxisRaw("Vertical") == -1;
+        bool isDownThrusterActive = Input.GetAxisRaw("Vertical") == 1; */
+        bool isRightThrusterActive = Input.GetKey(KeyCode.A);
+        bool isLeftThrusterActive = Input.GetKey(KeyCode.D);
+        bool isUpThrusterActive = Input.GetKey(KeyCode.S);
+        bool isDownThrusterActive = Input.GetKey(KeyCode.W);
+        if (!canAct)
+            foreach (ParticleSystem thruster in thrusters)
+                thruster.Stop();
+        else {
+            if (!isRightThrusterActive || !isLeftThrusterActive) {
+                if (isRightThrusterActive)
+                    rightThruster.Play();
+                else
+                    rightThruster.Stop();
+
+                if (isLeftThrusterActive)
+                    leftThruster.Play();
+                else
+                    leftThruster.Stop();
+            }
+
+            if (!isUpThrusterActive || !isDownThrusterActive) {
+                if (isUpThrusterActive)
+                    upThruster.Play();
+                else
+                    upThruster.Stop();
+
+                if (isDownThrusterActive)
+                    downThruster.Play();
+                else
+                    downThruster.Stop();
+            }
+        }
     }
 
     private void shoot() {
@@ -204,8 +258,8 @@ public class PlayerController : MonoBehaviour {
                 Mathf.Cos(Random.Range(onHitMinLaunchAngle, onHitMaxLaunchAngle)), 0);
             //Vector2 launchVector = new Vector2(0, launchAngle);
             rb.velocity = new Vector2(0, 0);
-            rb.AddForce(launchVector * forceApp * Random.Range(0.5f, 2.5f), ForceMode2D.Impulse);   //a lot of this could be combined into one big function but idk
-            rb.AddForce(Vector2.up * forceApp * 2f, ForceMode2D.Impulse);
+            rb.AddForce(launchVector * 10 * Random.Range(0.5f, 2.5f), ForceMode2D.Impulse);   //a lot of this could be combined into one big function but idk
+            rb.AddForce(Vector2.up * 10 * 2f, ForceMode2D.Impulse);
             StartCoroutine(playHitAnimation(onHitImmunityTime));
             StartCoroutine(playerImmuneFor(onHitImmunityTime));
             health--;

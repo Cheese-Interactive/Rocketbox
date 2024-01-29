@@ -46,5 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cooldown: 300
   projectile: {fileID: 7812196823603378040, guid: a06472a7180c26343b28af1a82888f6e, type: 3}
-  bloom: 31
+  bloom: 40
   projectilesToShoot: 6
