@@ -39,13 +39,19 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private GameObject playerSprite;
     [SerializeField] private GameObject healthIndicatorSprite;
     [SerializeField] private GameObject simpleText; //temporary
+
+    [Header("Visual")]
     [SerializeField] private Color lightBaseColor;
     [SerializeField] private Color lightOnHitColor;
     [SerializeField] private ParticleSystem leftThruster;
     [SerializeField] private ParticleSystem rightThruster;
     [SerializeField] private ParticleSystem upThruster;
     [SerializeField] private ParticleSystem downThruster;
+    [SerializeField] private float thrusterEmissionRate;
     private List<ParticleSystem> thrusters = new List<ParticleSystem>();
+    private List<ParticleSystem.EmissionModule> thrusterEmissionModules = new List<ParticleSystem.EmissionModule>();
+    private bool shouldEmitHorizontal = true;
+    private bool shouldEmitVertical = true;
     private SpriteRenderer healthShower;
     private PlayerSpotlight playerLight;
 
@@ -69,6 +75,9 @@ public class PlayerController : MonoBehaviour {
         thrusters.Add(rightThruster);
         thrusters.Add(downThruster);
         thrusters.Add(upThruster);
+        for (int i = 0; i < thrusters.Count; i++)
+            thrusterEmissionModules.Add(thrusters[i].emission);
+        disableParticles();
 
     }
 
@@ -121,43 +130,75 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-    //this whole script is bad and doesnt work, needs to be re coded
+    //this whole script is bad and doesnt work, needs to be recoded
     private void playParticles() {
-        /*bool isRightThrusterActive = Input.GetAxisRaw("Horizontal") == -1;
-        bool isLeftThrusterActive = Input.GetAxisRaw("Horizontal") == 1;
-        bool isUpThrusterActive = Input.GetAxisRaw("Vertical") == -1;
-        bool isDownThrusterActive = Input.GetAxisRaw("Vertical") == 1; */
-        bool isRightThrusterActive = Input.GetKey(KeyCode.A);
-        bool isLeftThrusterActive = Input.GetKey(KeyCode.D);
-        bool isUpThrusterActive = Input.GetKey(KeyCode.S);
-        bool isDownThrusterActive = Input.GetKey(KeyCode.W);
+        ParticleSystem.EmissionModule leftEmitter = leftThruster.emission;
+        ParticleSystem.EmissionModule rightEmitter = rightThruster.emission;
+        ParticleSystem.EmissionModule upEmitter = upThruster.emission;
+        ParticleSystem.EmissionModule downEmitter = downThruster.emission;
+
+
         if (!canAct)
-            foreach (ParticleSystem thruster in thrusters)
-                thruster.Stop();
+            disableParticles();
         else {
-            if (!isRightThrusterActive || !isLeftThrusterActive) {
-                if (isRightThrusterActive)
-                    rightThruster.Play();
-                else
-                    rightThruster.Stop();
-
-                if (isLeftThrusterActive)
-                    leftThruster.Play();
-                else
-                    leftThruster.Stop();
+            if (shouldEmitHorizontal) {
+                if (Input.GetKey(KeyCode.D)) {
+                    leftEmitter.enabled = true;
+                    shouldEmitHorizontal = false;
+                }
+                if (Input.GetKey(KeyCode.A)) {
+                    rightEmitter.enabled = true;
+                    shouldEmitHorizontal = false;
+                }
+            }
+            else {
+                if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.A)) {
+                    leftEmitter.enabled = false;
+                    rightEmitter.enabled = false;
+                }
+                if (Input.GetKeyUp(KeyCode.D)) {
+                    leftEmitter.enabled = false;
+                    shouldEmitHorizontal = true;
+                }
+                if (Input.GetKeyUp(KeyCode.A)) {
+                    rightEmitter.enabled = false;
+                    shouldEmitHorizontal = true;
+                }
             }
 
-            if (!isUpThrusterActive || !isDownThrusterActive) {
-                if (isUpThrusterActive)
-                    upThruster.Play();
-                else
-                    upThruster.Stop();
+            if (shouldEmitVertical) {
+                if (Input.GetKey(KeyCode.W)) {
+                    downEmitter.enabled = true;
+                    shouldEmitVertical = false;
+                }
+                if (Input.GetKey(KeyCode.S)) {
+                    upEmitter.enabled = true;
+                    shouldEmitVertical = false;
+                }
 
-                if (isDownThrusterActive)
-                    downThruster.Play();
-                else
-                    downThruster.Stop();
             }
+            else {
+                if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.S)) {
+                    upEmitter.enabled = false;
+                    downEmitter.enabled = false;
+                }
+                if (Input.GetKeyUp(KeyCode.W)) {
+                    downEmitter.enabled = false;
+                    shouldEmitVertical = true;
+                }
+                if (Input.GetKeyUp(KeyCode.S)) {
+                    upEmitter.enabled = false;
+                    shouldEmitVertical = true;
+                }
+            }
+        }
+
+    }
+
+    private void disableParticles() {
+        foreach (ParticleSystem.EmissionModule emitter in thrusterEmissionModules) {
+            ParticleSystem.EmissionModule temp = emitter; //you have to assign a reference like this or it doesnt work!!! :D i love you unity will you marry me <3 <3 <3 <3 omg :) :) 
+            temp.enabled = false;
         }
     }
 
