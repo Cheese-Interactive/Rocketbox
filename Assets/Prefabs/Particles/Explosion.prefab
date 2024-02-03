@@ -4870,6 +4870,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 20
   simSpeed: 1.2
-  maxEmission: 200
+  maxEmission: 300
   minEmission: 40
-  maxParticles: 170
+  maxParticles: 220

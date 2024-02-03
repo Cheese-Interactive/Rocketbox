@@ -27,9 +27,8 @@ public abstract class Enemy : MonoBehaviour {
         rb = GetComponent<Rigidbody2D>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         rb.gravityScale = 0f;
-        if (isDecoy) {
+        if (isDecoy)
             gameObject.SetActive(false);
-        }
     }
 
     void Update() {

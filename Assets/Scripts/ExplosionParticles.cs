@@ -30,7 +30,7 @@ public class ExplosionParticles : MonoBehaviour {
         main = particles.main;
         shape = particles.shape;
         emission = particles.emission;
-        //emissionRate = emission.rateOverTime;
+        emissionRate = emission.rateOverTime;
 
         emissionRate.mode = ParticleSystemCurveMode.TwoConstants;
         emission.rate = new ParticleSystem.MinMaxCurve(minEmission, maxEmission);
