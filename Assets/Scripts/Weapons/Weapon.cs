@@ -9,10 +9,15 @@ public abstract class Weapon : MonoBehaviour {
     // Start is called before the first frame update
     [SerializeField] protected float cooldown; //time between shots
     [SerializeField] protected GameObject projectile;
+    [SerializeField] private string name;
     public abstract float shoot(Vector3 pos, float degrees);
     public abstract float shoot(Vector3 pos, Quaternion angle);
 
     public float getCooldown() {
         return cooldown;
+    }
+
+    public string toString() {
+        return name;
     }
 }

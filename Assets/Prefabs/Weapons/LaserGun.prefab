@@ -46,3 +46,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cooldown: 0.19231243
   projectile: {fileID: 7812196823603378040, guid: 6e10db21e484b654d9439c4666afdcf5, type: 3}
+  name: Laser Gun

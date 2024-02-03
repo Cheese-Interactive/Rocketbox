@@ -87,7 +87,7 @@ public abstract class Projectile : MonoBehaviour {
         return new Vector2(Mathf.Cos(Radians) * speed, Mathf.Sin(Radians) * speed);
     }
 
-    //ai generated (vvvv)
+    //this one is ai generated
     protected Vector3 getDirectionVector(GameObject other) {
         Vector3 direction = other.transform.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

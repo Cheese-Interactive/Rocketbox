@@ -8,7 +8,6 @@ public class PlayerCamera : MonoBehaviour {
     private int layer = -50;
     //[^^^^^] is a result of me figuring out how to "layer" gameobjects in unity2d
     private Camera cam;
-    private bool playerInFrame;
     Vector3 targetPos = new Vector3(0, 0, 0);
     Vector3 currentPos = new Vector3(0, 0, 0);
 

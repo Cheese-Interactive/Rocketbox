@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class LaserGun : Weapon {
+public class BasicGun : Weapon {
 
 
     override public float shoot(Vector3 pos, float degrees) {
