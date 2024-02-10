@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 798850566974725982}
   - component: {fileID: 7498174531518915603}
   - component: {fileID: -7971942719008362106}
+  - component: {fileID: 2708449120054800043}
   m_Layer: 8
   m_Name: Sweeper
   m_TagString: Enemy
@@ -176,6 +177,54 @@ MonoBehaviour:
   speed: 7.5
   prefab: {fileID: 1431105415212773981}
   angularSpeed: 300
+--- !u!114 &2708449120054800043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1431105415212773981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000fddc2d73b12cdd0d
+  m_ShapePath:
+  - {x: -1.2495515, y: -1.6897757, z: 0}
+  - {x: -1.9671044, y: -0.7059805, z: 0}
+  - {x: -1.9882946, y: 0.6713481, z: 0}
+  - {x: -1.2707407, y: 1.7003704, z: 0}
+  - {x: 0.003534317, y: 2.0698664, z: 0}
+  - {x: 1.270741, y: 1.6897757, z: 0}
+  - {x: 2.0059578, y: 0.6289688, z: 0}
+  - {x: 2.0165527, y: 0.16279596, z: 0}
+  - {x: 7.737763, y: 0.18398571, z: 0}
+  - {x: 7.7271676, y: 2.483065, z: 0}
+  - {x: 9.252822, y: 2.4714684, z: 0}
+  - {x: 9.209777, y: 0.18415266, z: 0}
+  - {x: 9.411747, y: 0.1733908, z: 0}
+  - {x: 9.422341, y: -0.16564387, z: 0}
+  - {x: 9.218013, y: -0.16715822, z: 0}
+  - {x: 9.231634, y: -2.464723, z: 0}
+  - {x: 7.7144713, y: -2.4753182, z: 0}
+  - {x: 7.727168, y: -0.18683362, z: 0}
+  - {x: 2.0165527, y: -0.17623872, z: 0}
+  - {x: 2.0059578, y: -0.6424114, z: 0}
+  - {x: 1.2813358, y: -1.6579909, z: 0}
+  - {x: -0.017655373, y: -2.083309, z: 0}
+  m_ShapePathHash: 1315615960
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -376404
+  m_LocalBounds:
+    m_Center: {x: 3.7170234, y: 0.0038733482, z: 0}
+    m_Extent: {x: 5.705318, y: 2.4791915, z: 0}
 --- !u!1 &6373179047266227675
 GameObject:
   m_ObjectHideFlags: 0

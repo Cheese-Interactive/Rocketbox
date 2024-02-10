@@ -66,7 +66,7 @@ public class TheCirculator : Boss {
 
 
         if (curActionTime > 0f)
-            curActionTime = curActionTime - (Time.deltaTime);
+            curActionTime -= Time.deltaTime;
 
     }
 

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 798850566974725982}
   - component: {fileID: 7498174531518915603}
   - component: {fileID: 4734843206235979586}
+  - component: {fileID: 6367894112576551839}
   m_Layer: 8
   m_Name: Stabber
   m_TagString: Enemy
@@ -175,3 +176,37 @@ MonoBehaviour:
   speed: 3400
   prefab: {fileID: 1431105415212773981}
   dashCooldown: 2.7
+--- !u!114 &6367894112576551839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1431105415212773981}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000fddc2d73b12cdd0d
+  m_ShapePath:
+  - {x: -4.145, y: -3.49, z: 0}
+  - {x: -4.20784, y: -0.5683172, z: 0}
+  - {x: -3.090834, y: -0.009814132, z: 0}
+  - {x: -4.20784, y: 0.5486889, z: 0}
+  - {x: -4.145, y: 3.49, z: 0}
+  - {x: -2.1318333, y: 2.0016787, z: 0}
+  - {x: 4.2744193, y: 0.036674913, z: 0}
+  - {x: -2.2249439, y: -1.9895372, z: 0}
+  m_ShapePathHash: 1997489977
+  m_Mesh: {fileID: 0}
+  m_InstanceId: -371310
+  m_LocalBounds:
+    m_Center: {x: 0.03328991, y: 0, z: 0}
+    m_Extent: {x: 4.24113, y: 3.49, z: 0}

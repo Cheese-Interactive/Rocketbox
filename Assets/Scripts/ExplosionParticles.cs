@@ -12,16 +12,16 @@ public class ExplosionParticles : MonoBehaviour {
     ParticleSystem.MainModule main;
     ParticleSystem.ShapeModule shape;
     ParticleSystem.EmissionModule emission;
-    ParticleSystem.MinMaxCurve emissionRate;
+    ParticleSystem.Burst burst;
+    ParticleSystem.MinMaxCurve curve;
 
     void Start() {
     }
 
     private IEnumerator playAnim(float duration) {
         particles.Play();
-        yield return new WaitForSeconds(duration * 10);
+        yield return new WaitForSeconds(duration * 100);
         particles.Stop();
-        print("i have exploded");
         Destroy(gameObject);
     }
 
@@ -30,10 +30,12 @@ public class ExplosionParticles : MonoBehaviour {
         main = particles.main;
         shape = particles.shape;
         emission = particles.emission;
-        emissionRate = emission.rateOverTime;
+        burst = emission.GetBurst(0);
+        curve = burst.count;
 
-        emissionRate.mode = ParticleSystemCurveMode.TwoConstants;
-        emission.rate = new ParticleSystem.MinMaxCurve(minEmission, maxEmission);
+        curve.mode = ParticleSystemCurveMode.TwoConstants;
+        curve.constantMax = maxEmission;
+        curve.constantMin = maxEmission;
         main.maxParticles = maxParticles;
         main.simulationSpeed = simSpeed;
         shape.scale = new Vector3(newRadius, newRadius, 1);

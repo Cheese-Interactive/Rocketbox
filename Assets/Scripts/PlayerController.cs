@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerController : MonoBehaviour {
 
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour {
     [Header("Other")]
     [SerializeField] private GameObject playerSprite;
     [SerializeField] private GameObject healthIndicatorSprite;
+    [SerializeField] private GameObject barrierSprite;
     [SerializeField] private GameObject simpleText; //temporary
 
     [Header("Visual")]
@@ -53,6 +55,7 @@ public class PlayerController : MonoBehaviour {
     private bool shouldEmitHorizontal = true;
     private bool shouldEmitVertical = true;
     private SpriteRenderer healthShower;
+    private Light2D healthLight;
     private PlayerSpotlight playerLight;
 
 
@@ -69,6 +72,7 @@ public class PlayerController : MonoBehaviour {
         maxHealth = health;
         forceAppMax = forceApp;
         healthShower = healthIndicatorSprite.GetComponent<SpriteRenderer>();
+        healthLight = healthIndicatorSprite.GetComponent<Light2D>();
         cam = GameObject.Find("Main Camera").GetComponent<PlayerCamera>();
         playerLight = GameObject.Find("PlayerLight").GetComponent<PlayerSpotlight>();
         thrusters.Add(leftThruster);
@@ -78,6 +82,7 @@ public class PlayerController : MonoBehaviour {
         for (int i = 0; i < thrusters.Count; i++)
             thrusterEmissionModules.Add(thrusters[i].emission);
         disableParticles();
+        barrierSprite.SetActive(false);
 
     }
 
@@ -252,7 +257,9 @@ public class PlayerController : MonoBehaviour {
         rb.excludeLayers = (1 << 8) | (1 << 7);   //I added ExcludeLayer later so maybe having both is redundant
         yield return new WaitForSeconds(time);
         rb.excludeLayers = 0;
-        yield return new WaitForSeconds(postHitGracePeriod); //grace period. fixes some issues
+        barrierSprite.SetActive(true);
+        yield return new WaitForSeconds(postHitGracePeriod); //grace period. fixes some issues. it works very well as a mechanic too
+        barrierSprite.SetActive(false);
         isImmune = false;
     }
 
@@ -342,10 +349,15 @@ public class PlayerController : MonoBehaviour {
 
     private void updateHealthIndicator() {
         if (health == maxHealth)
-            healthShower.color = Color.green;
-        else if (health < maxHealth && health > 1) //first hit, light yellow. hits after that, light red. killing blow, light turns off. (for action freeze)
-            healthShower.color = Color.yellow;
+            changeIndicatorColor(Color.green);
+        else if (health < maxHealth && health > 1)
+            changeIndicatorColor(Color.yellow);
         else
-            healthShower.color = Color.red;
+            changeIndicatorColor(Color.red);
+    }
+
+    private void changeIndicatorColor(Color color) {
+        healthShower.color = color;
+        healthLight.color = color;
     }
 }

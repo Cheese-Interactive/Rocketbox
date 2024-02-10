@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6147917523052701904}
   - component: {fileID: -6972433812209539381}
   - component: {fileID: 6927507798441899442}
+  - component: {fileID: 4270452707690799624}
   m_Layer: 7
   m_Name: Laser
   m_TagString: Projectile
@@ -76,9 +77,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 81
   m_Sprite: {fileID: -3901707038342722804, guid: 954b8a14302a15b4ab0dd1829f3e410c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.36862746}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.023529412}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -108,16 +109,16 @@ MonoBehaviour:
   m_SelfShadows: 0
   m_ApplyToSortingLayers: 00000000fddc2d73b12cdd0d
   m_ShapePath:
-  - {x: -0.5, y: -0.5, z: 0}
-  - {x: -0.5, y: 0.5, z: 0}
-  - {x: 0.49999988, y: 0.5, z: 0}
-  - {x: 0.49999988, y: -0.5, z: 0}
-  m_ShapePathHash: 0
+  - {x: -4.931133, y: -0.7799653, z: 0}
+  - {x: -4.9338584, y: 0.7487891, z: 0}
+  - {x: 5.032875, y: 0.81036466, z: 0}
+  - {x: 5.035678, y: -0.733497, z: 0}
+  m_ShapePathHash: 364975417
   m_Mesh: {fileID: 0}
-  m_InstanceId: 92230
+  m_InstanceId: 37062
   m_LocalBounds:
-    m_Center: {x: -0.000000059604645, y: 0, z: 0}
-    m_Extent: {x: 0.49999994, y: 0.5, z: 0}
+    m_Center: {x: 0.05090952, y: 0.015199661, z: 0}
+    m_Extent: {x: 4.984768, y: 0.79516494, z: 0}
 --- !u!50 &6147917523052701904
 Rigidbody2D:
   serializedVersion: 4
@@ -207,3 +208,53 @@ MonoBehaviour:
   hitForce: 0
   gravityModifier: 0
   shouldHitPlayer: 0
+--- !u!114 &4270452707690799624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7812196823603378040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ComponentVersion: 1
+  m_LightType: 1
+  m_BlendStyleIndex: 0
+  m_FalloffIntensity: 0.562
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Intensity: 22
+  m_LightVolumeIntensity: 0.24
+  m_LightVolumeIntensityEnabled: 0
+  m_ApplyToSortingLayers: 00000000fddc2d73b12cdd0d
+  m_LightCookieSprite: {fileID: -3901707038342722804, guid: 954b8a14302a15b4ab0dd1829f3e410c, type: 3}
+  m_DeprecatedPointLightCookieSprite: {fileID: 0}
+  m_LightOrder: 0
+  m_AlphaBlendOnOverlap: 0
+  m_OverlapOperation: 0
+  m_NormalMapDistance: 3
+  m_NormalMapQuality: 2
+  m_UseNormalMap: 0
+  m_ShadowIntensityEnabled: 0
+  m_ShadowIntensity: 0.75
+  m_ShadowVolumeIntensityEnabled: 0
+  m_ShadowVolumeIntensity: 0.75
+  m_LocalBounds:
+    m_Center: {x: 0.0078001022, y: 0.015700042, z: 0}
+    m_Extent: {x: 5.4863, y: 1.2941, z: 0}
+  m_PointLightInnerAngle: 224.49956
+  m_PointLightOuterAngle: 360
+  m_PointLightInnerRadius: 0.22
+  m_PointLightOuterRadius: 2
+  m_ShapeLightParametricSides: 5
+  m_ShapeLightParametricAngleOffset: 0
+  m_ShapeLightParametricRadius: 1
+  m_ShapeLightFalloffSize: 0.67
+  m_ShapeLightFalloffOffset: {x: 0, y: 0}
+  m_ShapePath:
+  - {x: -4.967838, y: -0.78296185, z: 0}
+  - {x: 4.9705715, y: -0.74712676, z: 0}
+  - {x: 5.0011473, y: 0.743756, z: 0}
+  - {x: -4.970874, y: 0.80602556, z: 0}

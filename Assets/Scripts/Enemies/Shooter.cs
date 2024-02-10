@@ -41,8 +41,6 @@ public class Shooter : Enemy {
     }
 
 
-    //taken from PlayerController
-
 }
 
 

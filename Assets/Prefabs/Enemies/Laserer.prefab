@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 769421490209964231}
   - component: {fileID: 6474200803741323005}
   - component: {fileID: 378848659641004928}
-  - component: {fileID: 8741329388572871069}
+  - component: {fileID: 6820539884893879324}
+  - component: {fileID: 736702890970541897}
   m_Layer: 8
   m_Name: Laserer
   m_TagString: Enemy
@@ -143,8 +144,57 @@ MonoBehaviour:
   upLaser: {fileID: 6141066667558743274}
   downLaser: {fileID: 4659493352573701450}
   moveDirection: {x: 1, y: 0}
---- !u!61 &8741329388572871069
-BoxCollider2D:
+--- !u!114 &6820539884893879324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2476121729145799323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ShadowGroup: 0
+  m_ComponentVersion: 1
+  m_HasRenderer: 1
+  m_UseRendererSilhouette: 1
+  m_CastsShadows: 1
+  m_SelfShadows: 0
+  m_ApplyToSortingLayers: 00000000fddc2d73b12cdd0d
+  m_ShapePath:
+  - {x: -1.6747938, y: -3.5469959, z: 0}
+  - {x: -3.9059286, y: -1.52224, z: 0}
+  - {x: -3.926025, y: -1.121402, z: 0}
+  - {x: -5.0155425, y: -0.853098, z: 0}
+  - {x: -5.0385594, y: 0.94510317, z: 0}
+  - {x: -3.9492807, y: 1.219284, z: 0}
+  - {x: -3.929182, y: 1.5207516, z: 0}
+  - {x: -1.6490448, y: 3.5450983, z: 0}
+  - {x: -1.1255394, y: 3.550629, z: 0}
+  - {x: -0.8944142, y: 4.585666, z: 0}
+  - {x: 0.89428985, y: 4.585666, z: 0}
+  - {x: 1.1756593, y: 3.5506296, z: 0}
+  - {x: 1.6680553, y: 3.5606782, z: 0}
+  - {x: 3.920098, y: 1.5252696, z: 0}
+  - {x: 3.9190097, y: 1.1589905, z: 0}
+  - {x: 4.9741445, y: 0.9077684, z: 0}
+  - {x: 5.00429, y: -0.90103436, z: 0}
+  - {x: 3.9391072, y: -1.1924522, z: 0}
+  - {x: 1.6389967, y: -3.5651956, z: 0}
+  - {x: 1.1655737, y: -3.543887, z: 0}
+  - {x: 0.9143511, y: -4.6090703, z: 0}
+  - {x: -0.8944517, y: -4.599022, z: 0}
+  - {x: -1.1758199, y: -3.5539358, z: 0}
+  m_ShapePathHash: 173458649
+  m_Mesh: {fileID: 0}
+  m_InstanceId: 86104
+  m_LocalBounds:
+    m_Center: {x: -0.017134666, y: -0.011702061, z: 0}
+    m_Extent: {x: 5.021425, y: 4.5973682, z: 0}
+--- !u!60 &736702890970541897
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -155,7 +205,7 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 456
+    m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -185,9 +235,46 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: 2.18, y: -3.0249999}
+      - {x: 2.6799998, y: -2.575}
+      - {x: 3.06, y: -2.235}
+      - {x: 3.26, y: -2.055}
+      - {x: 3.85, y: -1.525}
+      - {x: 3.8999999, y: -1.475}
+      - {x: 3.8999999, y: 1.485}
+      - {x: 3.84, y: 1.545}
+      - {x: 3.1499999, y: 2.165}
+      - {x: 2.47, y: 2.7749999}
+      - {x: 1.9699999, y: 3.225}
+      - {x: 1.78, y: 3.395}
+      - {x: 1.6899999, y: 3.475}
+      - {x: 1.63, y: 3.5249999}
+      - {x: -1.64, y: 3.5249999}
+      - {x: -1.6999999, y: 3.475}
+      - {x: -1.88, y: 3.3149998}
+      - {x: -2.37, y: 2.865}
+      - {x: -2.56, y: 2.695}
+      - {x: -2.85, y: 2.435}
+      - {x: -3.1599998, y: 2.155}
+      - {x: -3.4499998, y: 1.905}
+      - {x: -3.6499999, y: 1.7249999}
+      - {x: -3.84, y: 1.545}
+      - {x: -3.8999999, y: 1.485}
+      - {x: -3.8999999, y: -1.475}
+      - {x: -3.85, y: -1.525}
+      - {x: -3.4499998, y: -1.885}
+      - {x: -3.06, y: -2.235}
+      - {x: -2.87, y: -2.405}
+      - {x: -2.78, y: -2.485}
+      - {x: -2.3799999, y: -2.845}
+      - {x: -1.79, y: -3.375}
+      - {x: -1.62, y: -3.5249999}
+      - {x: 1.62, y: -3.5249999}
+      - {x: 1.7099999, y: -3.455}
+      - {x: 1.9, y: -3.2849998}
+  m_UseDelaunayMesh: 0
 --- !u!1 &2535516867370819918
 GameObject:
   m_ObjectHideFlags: 0

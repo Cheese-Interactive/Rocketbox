@@ -39,6 +39,7 @@ public abstract class Boss : MonoBehaviour {
         rb.mass = 1;
         rb.AddForce(Vector2.up * 20, ForceMode2D.Impulse);
         //StartCoroutine(fakeGravity());
+        GameObject.FindAnyObjectByType<GameManager>().enemyKilled();
 
         rb.excludeLayers = (1 << 3) | (1 << 6);
         StartCoroutine(queueForDeletion());

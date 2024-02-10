@@ -160,7 +160,7 @@ MonoBehaviour:
   speed: 35
   damage: 9999
   hitForce: 0
-  gravityModifier: 5
+  gravityModifier: 3
   shouldHitPlayer: 1
 --- !u!60 &1311396949208772443
 PolygonCollider2D:
